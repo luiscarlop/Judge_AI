@@ -1,7 +1,9 @@
 import os
 
+import cv2
 import numpy as np
 import xml.etree.ElementTree as ET
+import matplotlib.pyplot as plt
 
 from PIL import Image
 from pathlib import Path
@@ -99,13 +101,48 @@ def pair_annotations_with_images(labels_dir: str) -> dict:
 
     return annotations_dict
 
-def flow_from_directory(img_dir: str, labels_dir: str, size: Tuple[int]) -> Generator:
+def draw_keypoints(image: np.ndarray, keypoints: np.ndarray) -> np.ndarray:
+    """Draw keypoints on an image.
 
-    with open("all_labels.xml") as f:
-        labels = parse_xml(f)
+    Args:
+        image (np.ndarray): input image
+        keypoints (np.ndarray): keypoints to draw
 
-    for img_path, labels_ in zip(img_dir, labels):
-        yield Image.open(img_path), labels_
+    Returns:
+        np.ndarray: image with keypoints drawn
+    """
+    for x, y in keypoints:
+        cv2.circle(image, (int(x), int(y)), 5, (0, 255, 0), -1)
+    
+    # Mostrar la imagen con los puntos
+    plt.imshow(image)
+
+
+def image_scaler(image: np.ndarray, keypoints: np.ndarray, size: Tuple[int]) -> Tuple[np.ndarray, np.ndarray]:
+    """Scale keypoints to a new size.
+
+    Args:
+        keypoints (np.ndarray): keypoints to scale
+        size (Tuple[int]): new size to scale keypoints to
+
+    Returns:
+        np.ndarray: scaled keypoints
+    """
+    h, w = image.shape[:2]
+    new_h, new_w = size
+
+    scaled_img = cv2.resize(image, (new_w, new_h))
+    scaled_keypoints = keypoints * np.array([new_w / w, new_h / h])
+
+    return scaled_img, scaled_keypoints
+
+# def flow_from_directory(img_dir: str, labels_dir: str, size: Tuple[int]) -> Generator:
+
+#     with open("all_labels.xml") as f:
+#         labels = parse_xml(f)
+
+#     for img_path, labels_ in zip(img_dir, labels):
+#         yield Image.open(img_path), labels_
 
 
 xml_files = [f for f in DATA_DIR.glob("annotations/*.xml")]
