@@ -118,6 +118,8 @@ def draw_keypoints(image: np.ndarray, keypoints: np.ndarray) -> np.ndarray:
     plt.imshow(image)
 
 
+
+
 def image_scaler(image: np.ndarray, keypoints: np.ndarray, size: Tuple[int]) -> Tuple[np.ndarray, np.ndarray]:
     """Scale keypoints to a new size.
 
