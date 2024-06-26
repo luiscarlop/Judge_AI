@@ -83,13 +83,25 @@ def draw_text(
 
 
 def find_angle(p1, p2, ref_pt = np.array([0,0])):
+    """Find the angle between two points. Formula: 
+    cos(theta) = (p1_ref . p2_ref) / (||p1_ref|| * ||p2_ref||)
+    theta = arccos(cos(theta)) --> angle in radians
+
+    Args:
+        p1 (_type_): _description_
+        p2 (_type_): _description_
+        ref_pt (_type_, optional): _description_. Defaults to np.array([0,0]).
+
+    Returns:
+        _type_: _description_
+    """
     p1_ref = p1 - ref_pt
     p2_ref = p2 - ref_pt
 
     cos_theta = (np.dot(p1_ref,p2_ref)) / (1.0 * np.linalg.norm(p1_ref) * np.linalg.norm(p2_ref))
     theta = np.arccos(np.clip(cos_theta, -1.0, 1.0))
             
-    degree = int(180 / np.pi) * theta
+    degree = int(180 / np.pi) * theta # convert radians to degrees
 
     return int(degree)
 
