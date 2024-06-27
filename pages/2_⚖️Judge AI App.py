@@ -22,12 +22,22 @@ st.set_page_config(
     },
 )
 
+
 st.title("Welcome to the fun part")
+st.subheader("You can test our AI with 3 freatures")
 st.write(
-    "If you are ready to start your workout, and you have your camera set up, you can select ether Video or Photo Mode."
+    """
+- 1. Real-time video
+- 2. Selfie mode
+- 3. Upload a photo
+"""
 )
-st.write("In case you have a photo you can use the uploade freature.")
-st.write("Let's go!")
+
+st.write("More modes, like competition mode and youtube video are coming soon!")
+st.write(
+    "This AI is very sensitve, so if possible reduce ammount of people animals or objects on screen."
+)
+st.write("Navigate trough the modes to try them:")
 
 # def main_page():
 #     st.markdown("# 🏠Home")
@@ -60,24 +70,35 @@ st.write("Let's go!")
 # page_names_to_funcs[selected_page]()
 
 option = st.selectbox(
-    "Select an option",
-    ("Intoduction", "Video of your camera", "Photo mode", "Upload a photo"),
+    "Select an option:",
+    ("Intoduction", "Live video", "Photo mode", "Upload a photo"),
     key=1,
 )
 if option == "Intoduction":
-    st.subheader("We have 3 modes of use yet")
+    st.subheader("Before starting")
     st.write(
-        "If you are ready to start your workout, and you have your camera set up, you can select ether Video or Photo Mode."
+        "If you are going to use the selfie mode or to film youself follow this steps first:"
     )
-    st.write("In case you have a photo you can use the uploade freature.")
+    st.write(
+        """
+    - 1. Set your workout space properly (prepare your camera, your weights, etc.).
+    - 2. Once you are ready, select the option on the app.
+    - 3. Enjoy the feature selected!
+    """
+    )
+    st.write("If you just want to upload a photo, you can go straight to it.")
     st.write("Let's go!")
 
-option = st.selectbox(
-    "Select an option",
-    ("Intoduction", "Video of your camera", "Photo mode", "Upload a photo"),
-)
-if option == "Video of your camera":
-    ####################################################################################### trasformador de video bueno
+
+if option == "Live video":
+    #######################################################################################
+    st.subheader("Live video")
+    st.write("Click on the start button and start doing squats.")
+    st.write("When you squat low enough, an indicator will appear on the screen")
+    st.write(
+        "Throughout the process, you will receive outputs indicating the state of your squat. \
+    Once you finish your squat, it will be added to your score."
+    )
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
 
@@ -231,7 +252,16 @@ if option == "Video of your camera":
 ###################################################################################################
 
 if option == "Photo mode":
-    img_file_buffer = st.camera_input("Take a picture")
+
+    st.subheader("Photo mode")
+    st.write(
+        "Take a photo when you’re at the lowest point of your squat. Please ask someone at the gym for help to avoid injuries!"
+    )
+    st.write("Oncet the photo is takes you can check how good you were doing it.")
+    st.write(
+        "Even if this process isn’t in real-time, you’ll earn a point if your photo shows that you’ve gone bellow the parallel position in your squat."
+    )
+    img_file_buffer = st.camera_input("Take a picture!")
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
 
@@ -380,7 +410,15 @@ if option == "Photo mode":
         st.write("No image captured. Please capture an image to proceed.")
 
 
+##############################################################################
 if option == "Upload a photo":
+    st.subheader("Upload a photo")
+    st.write(
+        "Once you have uploaded a photo you will get the instant feedback about your pose "
+    )
+    st.write(
+        "Even if this process isn’t in real-time, you’ll earn a point if your photo shows that you’ve gone below the parallel position in your squat."
+    )
     uploaded_file = st.file_uploader("Choose a photo", type=["jpg", "png"])
     mp_drawing = mp.solutions.drawing_utils
     mp_pose = mp.solutions.pose
