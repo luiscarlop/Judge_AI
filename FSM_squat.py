@@ -35,6 +35,7 @@ class FSM_squat:
                         "white": (255, 255, 255),
                         "cyan": (0, 255, 255),
                         "light_blue": (102, 204, 255),
+                        "black": (0, 0, 0),  # añadido
         }
 
         # Dictionary to maintain the various landmark features.
@@ -230,9 +231,10 @@ class FSM_squat:
                                 get_landmark_features(ps_lm.landmark, self.dict_features, 'right', frame_width, frame_height)
 
             offset_angle = find_angle(left_shldr_coord, right_shldr_coord, nose_coord)
-        
+            print(offset_angle,self.thresholds)
+
             # Camera is not aligned properly --> It is facing the user
-            if offset_angle > self.thresholds['OFFSET_THRESH']:
+            if offset_angle > self.thresholds:  # eliminado ['OFFSET_THRESH']
                 
                 draw_text(
                     frame, 
