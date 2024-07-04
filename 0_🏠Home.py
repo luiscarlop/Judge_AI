@@ -21,41 +21,46 @@ st.set_page_config(
 )
 
 
-# def main_page():
-#     st.markdown("# 🏠Home")
-#     st.sidebar.markdown("# 🏠Home")
+def main_page():
+    # st.markdown("# 🏠Home")
+    st.sidebar.markdown("# 🏠Home")
 
 
-# def page2():
-#     st.markdown("# 🕺Profile")
-#     st.sidebar.markdown("#🕺Profile")
+def page2():
+    # st.markdown("#🕺Our model")
+    st.sidebar.markdown("# 🕺Our model")
 
 
-# def page3():
-#     st.markdown("# ⚖️Judge AI App")
-#     st.sidebar.markdown("#⚖️Judge AI App")
+def page3():
+    # st.markdown("# ⚖️Pre-trained model")
+    st.sidebar.markdown("# ⚖️Pre-trained model")
 
 
-# def page4():
-#     st.markdown("# 🕵️‍♂️About_us")
-#     st.sidebar.markdown("# 🕵️‍♂️About_us")
+def page4():
+    # st.markdown("# 🕵️‍♂️About_us")
+    st.sidebar.markdown("# 🕵️‍♂️About_us")
 
 
-# page_names_to_funcs = {
-#     "🏠Home": main_page,
-#     "🕺Profile": page2,
-#     "⚖️Judge AI App": page3,
-#     "🕵️‍♂️About_us": page4,
-# }
+page_names_to_funcs = {
+    "🏠Home": main_page,
+    "🕺Our model.py": page2,
+    "⚖️Pre-trained model": page3,
+    "🕵️‍♂️About_us": page4,
+}
 
-# selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
-# page_names_to_funcs[selected_page]()
+selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
+page_names_to_funcs[selected_page]()
 
 # st.title("This is Judge AI")
 st.markdown(
     "<h1 style='text-align: center; '>This is Judge AI</h1>",
     unsafe_allow_html=True,
 )
+st.markdown(
+    "<hr style='border:2px solid #f3b323; margin-bottom: 0px; margin-top: 0px'>",
+    unsafe_allow_html=True,
+)
+
 st.markdown(
     "<h6 style='text-align: center; '>This AI is designed to determine whether a user is performing their squats correctly. It counts the squats in real-time, \
     leveraging the power of our trained AI. .</h6>",
@@ -68,10 +73,6 @@ st.markdown(
 # )
 
 st.markdown("<h1 style='text-align: center;'>Uses</h1>", unsafe_allow_html=True)
-st.markdown(
-    "<hr style='border:2px solid gold; margin-bottom: 0px; margin-top: 0px'>",
-    unsafe_allow_html=True,
-)
 
 
 # st.header(
@@ -406,20 +407,18 @@ with col3:
 
 
 ###############################################################
-input_video_path = "data/video_sample/IMG_5619.mov"
-output_video_path = "data/video_sample/IMG_5619.mp4"
-# output_audio_path = "data/audio_sample/original_audio.mp3"
+input_video_path = "data/video_sample/IMG_5693.mov"
+output_video_path = "data/video_sample/IMG_5693.mp4"
 
-# Check if the processed video file exists
+
 if not os.path.exists(output_video_path):
-    # If the file doesn't exist, process the video
+
     cap = cv2.VideoCapture(input_video_path)
 
-    # Get the original video's width and height
     frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-    fourcc = cv2.VideoWriter_fourcc(*"H264")  # Use H.264 codec
+    fourcc = cv2.VideoWriter_fourcc(*"H264")
     out = cv2.VideoWriter(output_video_path, fourcc, 20.0, (frame_width, frame_height))
 
     mp_drawing = mp.solutions.drawing_utils
@@ -584,64 +583,18 @@ if not os.path.exists(output_video_path):
 ) = st.columns([1, 5, 1])
 
 with col2:
-    st.video(output_video_path, format="H264", loop=True, autoplay=True, muted=True)
-
-
+    st.video(
+        output_video_path,
+        format="H264",
+        loop=True,
+        autoplay=True,
+        muted=True,
+    )
+    st.markdown(
+        """<h6 style='text-align: center; '>Live and video tracking</h6>""",
+        unsafe_allow_html=True,
+    )
 # st.video("data\video_sample\IMG_5619.mp4")
 
-st.subheader("This is a layer 2 text", divider=True)
-st.markdown("Cool")
-
-
-# image = Image.open(
-#     r"C:\Users\desqu\Desktop\Proyectos\Proyecto 3\Judge_AI\curiosidades-del-oso-panda-1280x720x80xX.jpg"
-# )
-
-# name = st.text_input(label="Name", max_chars=20, placeholder="Tu nombre")
-
-
-# password = st.text_input(
-#     label="Contraseña", placeholder="Tu contraseña", type="password"
-# )
-
-# st.title(name)
-# st.title(password)
-
-# # Text Area
-# texto = st.text_area(
-#     label="Enter Text", height=150, max_chars=2000, placeholder="Review"
-# )
-# st.write(texto)
-
-# # Input Numbers
-# number = st.number_input(
-#     label="Enter Number", min_value=-256, max_value=255, value=0, step=10
-# )
-
-# # Date Input
-# fecha = st.date_input(label="Tutoria")
-
-# # Time Input
-# tiempo = st.time_input(label="Hora")
-
-# # Color Picker
-# color = st.color_picker("Select Color")
-# st.write(f"Your color: {color}")
-
-# Lo de abajo es un codigo funcional que sirve para grabar la pantalla o para tomar fotos, pero empieza abriendo la camara en modo video
-# st.camera_input(
-#     label="Sentadillas ",
-#     key=None,
-#     help=None,
-#     on_change=None,
-#     args=None,
-#     kwargs=None,
-#     disabled=False,
-#     label_visibility="visible",
-# )
-
-# st.image(image=image, caption="pandas2", use_column_width=False)
-
-# st.image(
-#     image=image, caption="pandas", use_column_width=True
-# )  # Ajustar al ancho de la pantalla
+# st.subheader("This is a layer 2 text", divider=True)
+# st.markdown("Cool")

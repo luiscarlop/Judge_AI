@@ -91,35 +91,36 @@ st.write(
 )
 st.write("Navigate trough the modes to try them:")
 
-# def main_page():
-#     st.markdown("# 🏠Home")
-#     st.sidebar.markdown("# 🏠Home")
+
+def main_page():
+    # st.markdown("# 🏠Home")
+    st.sidebar.markdown("# 🏠Home")
 
 
-# def page2():
-#     st.markdown("#🕺Our model")
-#     st.sidebar.markdown("#🕺Our model")
+def page2():
+    # st.markdown("#🕺Our model")
+    st.sidebar.markdown("#🕺Our model")
 
 
-# def page3():
-#     st.markdown("#⚖️Pre-trained model")
-#     st.sidebar.markdown("#⚖️Pre-trained model")
+def page3():
+    # st.markdown("#⚖️Pre-trained model")
+    st.sidebar.markdown("# ⚖️Pre-trained model")
 
 
-# def page4():
-#     st.markdown("# 🕵️‍♂️About_us")
-#     st.sidebar.markdown("# 🕵️‍♂️About_us")
+def page4():
+    # st.markdown("# 🕵️‍♂️About_us")
+    st.sidebar.markdown("#  🕵️‍♂️About_us")
 
 
-# page_names_to_funcs = {
-#     "🏠Home": main_page,
-#     "🕺Our model": page2,
-#     "⚖️Pre-trained model": page3,
-#     "🕵️‍♂️About_us": page4,
-# }
+page_names_to_funcs = {
+    "🏠Home": main_page,
+    "🕺Our model": page2,
+    "⚖️Pre-trained model": page3,
+    "🕵️‍♂️About_us": page4,
+}
 
-# selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
-# page_names_to_funcs[selected_page]()
+selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
+page_names_to_funcs[selected_page]()
 
 option = st.selectbox(
     "Select an option:",
