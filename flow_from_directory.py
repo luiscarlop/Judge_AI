@@ -1,6 +1,6 @@
 import os
 
-import cv2
+import cv2 
 import numpy as np
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
@@ -41,35 +41,19 @@ def add_annotations_from_file(file: str, combined_root: ET.Element) -> ET.Elemen
     for image in root.findall("image"):
         combined_root.append(image)
 
-def parse_array(str_array: np.ndarray, parser: str = "float") -> np.ndarray:
-    """Parse a string array into a numpy array.
+# def parse_array(str_array: np.ndarray, parser: str = "float") -> np.ndarray:
+#     """Parse a string array into a numpy array.
 
-    Args:
-        str_array (np.ndarray): string array to parse
-        parser (str, optional): parser function to use. Defaults to "float".
+#     Args:
+#         str_array (np.ndarray): string array to parse
+#         parser (str, optional): parser function to use. Defaults to "float".
 
-    Returns:
-        np.ndarray: parsed numpy array
-    """    
-    return np.array(list(map(parser, str_array)))
+#     Returns:
+#         np.ndarray: parsed numpy array
+#     """    
+#     return np.array(list(map(parser, str_array)))
 
-def reshape_annotations(annotations: dict) -> Iterator:
-    """Flatten annotations into a list of tuples.
 
-    Args:
-        annotations (dict): dictionary of annotations
-
-    Returns:
-        Iterator: iterator of flattened annotations
-    """
-    for img_name, labels in annotations.items():
-        labels = np.array(labels).flatten().reshape(-1, 2)
-        label_list = [parse_array(label) for label in labels]
-
-        annotations[img_name] = label_list
-    
-    return annotations
-    
 
 def pair_annotations_with_images(labels_dir: str) -> dict:
     """Pair image paths with their corresponding labels.
@@ -87,17 +71,22 @@ def pair_annotations_with_images(labels_dir: str) -> dict:
 
     for image in labels_root.findall("image"):
         img_name = image.get("name")
+        img = plt.imread(os.path.join(DATA_DIR / 'dataset_train', img_name))
         skeletons = []
+        img_data = {}
+
+        img_data['image_path'] = os.path.join(DATA_DIR / 'dataset_train', img_name)
+        img_data['image_height'], img_data['image_width'] = img.shape[:2]
         
         for skeleton in image.findall("skeleton"):
-            skeleton_nodes = []
+            # skeleton_nodes = []
             for point in skeleton.findall("points"):
                 x = point.get('points').split(',')[0]
                 y = point.get('points').split(',')[1]
-                skeleton_nodes.append((x, y))
-            skeletons.append(skeleton_nodes)
-        annotations_dict[img_name] = skeletons
-                
+                # skeleton_nodes.append((x, y))
+                skeletons.append([x, y])
+            img_data['keypoints'] = skeletons
+        annotations_dict[img_name] = img_data  
 
     return annotations_dict
 
@@ -116,6 +105,21 @@ def draw_keypoints(image: np.ndarray, keypoints: np.ndarray) -> np.ndarray:
     
     # Mostrar la imagen con los puntos
     plt.imshow(image)
+
+
+def pose_landmark(pose_landmark: dict) -> np.ndarray:
+    """Get pose landmark from a dictionary.
+
+    Args:
+        pose_landmark (dict): pose landmark dictionary
+
+    Returns:
+        np.ndarray: pose landmark as a numpy array
+    """
+
+    left_shoulder = pose_landmark["left_shoulder"] # tuple (x, y)
+
+    return np.array([pose_landmark["x"], pose_landmark["y"]])
 
 
 
@@ -138,6 +142,8 @@ def image_scaler(image: np.ndarray, keypoints: np.ndarray, size: Tuple[int]) -> 
 
     return scaled_img, scaled_keypoints
 
+
+
 # def flow_from_directory(img_dir: str, labels_dir: str, size: Tuple[int]) -> Generator:
 
 #     with open("all_labels.xml") as f:
@@ -147,12 +153,4 @@ def image_scaler(image: np.ndarray, keypoints: np.ndarray, size: Tuple[int]) -> 
 #         yield Image.open(img_path), labels_
 
 
-xml_files = [f for f in DATA_DIR.glob("annotations/*.xml")]
-combined_root = ET.Element("annotations")
-
-for file in xml_files:
-    add_annotations_from_file(file, combined_root)
-
-with open("all_labels.xml", "wb") as f:
-    f.write(ET.tostring(combined_root))
 
