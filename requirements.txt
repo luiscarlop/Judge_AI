@@ -10,4 +10,5 @@ Pillow
 opencv-python
 opencv-python-headless
 moviepy
+streamlit-webrtc
 
