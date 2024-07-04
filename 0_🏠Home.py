@@ -84,14 +84,7 @@ st.markdown(
     "<h6 style='text-align: center; '>Experience the future of fitness with our cutting-edge tool, designed to revolutionize your daily workouts. With a focus on squats, our innovative solution automates the judging process in squat competitions, ensuring precision and fairness. Elevate your training regime and embrace the new standard in fitness technology .</h6>",
     unsafe_allow_html=True,
 )
-# st.markdown(
-#     "This AI is designed to determine whether a user is performing their squats correctly. It counts the squats in real-time, leveraging the power of our trained AI."
-# )
-# st.caption(
-#     "This AI is designed to determine whether a user is performing their squats correctly. It counts the squats in real-time, leveraging the power of our trained AI.",
-#     unsafe_allow_html=False,
-#     help=None,
-# )
+
 
 ################################################################
 
