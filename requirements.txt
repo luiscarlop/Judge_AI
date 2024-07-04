@@ -8,3 +8,5 @@ mediapipe
 Pillow
 opencv-python
 opencv-python-headless
+moviepy
+
