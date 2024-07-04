@@ -368,6 +368,14 @@ class FSM_squat:
 
                 # ----------------------------------------------------------------------------------------------------
 
+                else:
+                    if self.thresholds['KNEE_THRESH'][0] < knee_vertical_angle < self.thresholds['KNEE_THRESH'][1] and \
+                        self.state_tracker['state_seq'].count('s2')==1:
+                        
+                        self.state_tracker['LOWER_HIPS'] = True
+
+                #- ---------------------------------------------------------------------------------------------------
+
                 hip_text_coord_x = hip_coord[0] + 10
                 knee_text_coord_x = knee_coord[0] + 15
                 ankle_text_coord_x = ankle_coord[0] + 10
@@ -377,3 +385,103 @@ class FSM_squat:
                     hip_text_coord_x = frame_width - hip_coord[0] + 10
                     knee_text_coord_x = frame_width - knee_coord[0] + 15
                     ankle_text_coord_x = frame_width - ankle_coord[0] + 10
+
+                if 's3' in self.state_tracker['state_seq'] or current_state == 's1':
+                    self.state_tracker['LOWER_HIPS'] = False
+
+                self.state_tracker['COUNT_FRAMES'][self.state_tracker['DISPLAY_TEXT']]+=1
+
+                frame = self._show_feedback(frame, self.state_tracker['COUNT_FRAMES'], self.FEEDBACK_ID_MAP, self.state_tracker['LOWER_HIPS'])
+
+
+
+                cv2.putText(frame, str(int(hip_vertical_angle)), (hip_text_coord_x, hip_coord[1]), self.font, 0.6, self.COLORS['light_green'], 2, lineType=self.linetype)
+                cv2.putText(frame, str(int(knee_vertical_angle)), (knee_text_coord_x, knee_coord[1]+10), self.font, 0.6, self.COLORS['light_green'], 2, lineType=self.linetype)
+                cv2.putText(frame, str(int(ankle_vertical_angle)), (ankle_text_coord_x, ankle_coord[1]), self.font, 0.6, self.COLORS['light_green'], 2, lineType=self.linetype)
+
+                 
+                draw_text(
+                    frame, 
+                    "CORRECT: " + str(self.state_tracker['SQUAT_COUNT']), 
+                    pos=(int(frame_width*0.68), 30),
+                    text_color=(255, 255, 230),
+                    font_scale=0.7,
+                    text_color_bg=(18, 185, 0)
+                )  
+                
+
+                draw_text(
+                    frame, 
+                    "INCORRECT: " + str(self.state_tracker['IMPROPER_SQUAT']), 
+                    pos=(int(frame_width*0.68), 80),
+                    text_color=(255, 255, 230),
+                    font_scale=0.7,
+                    text_color_bg=(221, 0, 0),
+                    
+                )  
+                
+                
+                self.state_tracker['DISPLAY_TEXT'][self.state_tracker['COUNT_FRAMES'] > self.thresholds['CNT_FRAME_THRESH']] = False
+                self.state_tracker['COUNT_FRAMES'][self.state_tracker['COUNT_FRAMES'] > self.thresholds['CNT_FRAME_THRESH']] = 0    
+                self.state_tracker['prev_state'] = current_state
+
+        
+        else:
+
+            if self.flip_frame:
+                frame = cv2.flip(frame, 1)
+
+            end_time = time.perf_counter()
+            self.state_tracker['INACTIVE_TIME'] += end_time - self.state_tracker['start_inactive_time']
+
+            display_inactivity = False
+
+            if self.state_tracker['INACTIVE_TIME'] >= self.thresholds['INACTIVE_THRESH']:
+                self.state_tracker['SQUAT_COUNT'] = 0
+                self.state_tracker['IMPROPER_SQUAT'] = 0
+                # cv2.putText(frame, 'Resetting SQUAT_COUNT due to inactivity!!!', (10, frame_height - 25), self.font, 0.7, self.COLORS['blue'], 2)
+                display_inactivity = True
+
+            self.state_tracker['start_inactive_time'] = end_time
+
+            draw_text(
+                    frame, 
+                    "CORRECT: " + str(self.state_tracker['SQUAT_COUNT']), 
+                    pos=(int(frame_width*0.68), 30),
+                    text_color=(255, 255, 230),
+                    font_scale=0.7,
+                    text_color_bg=(18, 185, 0)
+                )  
+                
+
+            draw_text(
+                    frame, 
+                    "INCORRECT: " + str(self.state_tracker['IMPROPER_SQUAT']), 
+                    pos=(int(frame_width*0.68), 80),
+                    text_color=(255, 255, 230),
+                    font_scale=0.7,
+                    text_color_bg=(221, 0, 0),
+                    
+                )  
+
+            if display_inactivity:
+                play_sound = 'reset_counters'
+                self.state_tracker['start_inactive_time'] = time.perf_counter()
+                self.state_tracker['INACTIVE_TIME'] = 0.0
+            
+            
+            # Reset all other state variables
+            
+            self.state_tracker['prev_state'] =  None
+            self.state_tracker['curr_state'] = None
+            self.state_tracker['INACTIVE_TIME_FRONT'] = 0.0
+            self.state_tracker['INCORRECT_POSTURE'] = False
+            self.state_tracker['DISPLAY_TEXT'] = np.full((5,), False)
+            self.state_tracker['COUNT_FRAMES'] = np.zeros((5,), dtype=np.int64)
+            self.state_tracker['start_inactive_time_front'] = time.perf_counter()
+            
+            
+            
+        return frame, play_sound
+
+                    
