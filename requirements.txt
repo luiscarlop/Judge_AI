@@ -7,3 +7,4 @@ tensorflow
 mediapipe
 Pillow
 opencv-python
+opencv-python-headless
