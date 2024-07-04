@@ -399,7 +399,7 @@ class FSM_squat:
                 cv2.putText(frame, str(int(knee_vertical_angle)), (knee_text_coord_x, knee_coord[1]+10), self.font, 0.6, self.COLORS['light_green'], 2, lineType=self.linetype)
                 cv2.putText(frame, str(int(ankle_vertical_angle)), (ankle_text_coord_x, ankle_coord[1]), self.font, 0.6, self.COLORS['light_green'], 2, lineType=self.linetype)
 
-                 
+            
                 draw_text(
                     frame, 
                     "CORRECT: " + str(self.state_tracker['SQUAT_COUNT']), 
@@ -463,11 +463,6 @@ class FSM_squat:
                     text_color_bg=(221, 0, 0),
                     
                 )  
-
-            if display_inactivity:
-                play_sound = 'reset_counters'
-                self.state_tracker['start_inactive_time'] = time.perf_counter()
-                self.state_tracker['INACTIVE_TIME'] = 0.0
             
             
             # Reset all other state variables
@@ -478,10 +473,9 @@ class FSM_squat:
             self.state_tracker['INCORRECT_POSTURE'] = False
             self.state_tracker['DISPLAY_TEXT'] = np.full((5,), False)
             self.state_tracker['COUNT_FRAMES'] = np.zeros((5,), dtype=np.int64)
-            self.state_tracker['start_inactive_time_front'] = time.perf_counter()
             
             
-            
-        return frame, play_sound
+        
+        return frame
 
                     
