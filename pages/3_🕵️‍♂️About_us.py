@@ -336,7 +336,6 @@ with col6:
         """<h7 style='text-align: center; '>My name is Luis Carretero, and I am a telecommunications systems technician currently pursuing a degree in
         Telecommunications Systems Engineering at the Polytechnic University of Cartagena (UPCT).
         In addition to my studies, I have extensively trained in Data Science, acquiring skills in data analysis, machine learning, and statistical modeling.
-
         I am passionate about developing projects in data science and artificial intelligence like Judge AI.
         My comprehensive background in telecommunications and data science equips me with the skills to contribute to innovative solutions and advancements in technology.</h7>""",
         unsafe_allow_html=True,
@@ -431,7 +430,7 @@ with col6:
     st.markdown(
         """<h7 style='text-align: center; '>As a dynamic and forward-thinking professional, I’ve spent the last 5 years making waves in the marketing and sales industry. Now, I’m channeling my energy into the exciting world of data science.
         This new venture allows me to stretch my skills and set ambitious new targets. Currently, I’m actively updating my networks with the latest developments in my data analysis projects. I’m always open for a chat, so feel free to reach out
-        if you have any questions or if there’s anything you’d like to discuss..</h7>""",
+        if you have any questions or if there’s anything you’d like to discuss.</h7>""",
         unsafe_allow_html=True,
     )
 
