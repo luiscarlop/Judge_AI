@@ -297,11 +297,11 @@ st.markdown(
 #     unsafe_allow_html=True,
 # )
 with open(
-    "data\\stored_pictures\\linkedin-logo-free-download-free-png.webp", "rb"
+    "data/stored_pictures/linkedin-logo-free-download-free-png.webp", "rb"
 ) as image_file:
     encoded_string = base64.b64encode(image_file.read()).decode()
 
-with open("data\\stored_pictures\\github_PNG40.png", "rb") as image_file:
+with open("data/stored_pictures/github_PNG40.png", "rb") as image_file:
     encoded_string2 = base64.b64encode(image_file.read()).decode()
 
 st.markdown(
@@ -320,7 +320,7 @@ st.markdown(
 )
 
 
-luis_path = "data\stored_pictures\photo.jpg"
+luis_path = "data/stored_pictures/photo.jpg"
 luis_image = cv2.imread(luis_path)
 lu_rgb = cv2.cvtColor(luis_image, cv2.COLOR_BGR2RGB)
 new_width = 265
@@ -343,7 +343,7 @@ with col9:
 
 
 with open(
-    "data\\stored_pictures\\linkedin-logo-free-download-free-png.webp", "rb"
+    "data/stored_pictures/linkedin-logo-free-download-free-png.webp", "rb"
 ) as image_file:
     encoded_string = base64.b64encode(image_file.read()).decode()
 
@@ -360,7 +360,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-claudio_path = "data\stored_pictures\photo.jpg"
+claudio_path = "data/stored_pictures/photo.jpg"
 cl_image = cv2.imread(claudio_path)
 cl_rgb = cv2.cvtColor(cl_image, cv2.COLOR_BGR2RGB)
 new_width = 265
@@ -390,7 +390,7 @@ with col9:
 #     unsafe_allow_html=True,
 # )
 with open(
-    "data\\stored_pictures\\linkedin-logo-free-download-free-png.webp", "rb"
+    "data/stored_pictures/linkedin-logo-free-download-free-png.webp", "rb"
 ) as image_file:
     encoded_string = base64.b64encode(image_file.read()).decode()
 
@@ -408,7 +408,7 @@ st.markdown(
 )
 
 
-noe_path = "data\stored_pictures\photo.jpg"
+noe_path = "data/stored_pictures/photo.jpg"
 noe_image = cv2.imread(noe_path)
 noe_rgb = cv2.cvtColor(noe_image, cv2.COLOR_BGR2RGB)
 new_width = 265
