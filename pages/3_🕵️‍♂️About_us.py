@@ -308,7 +308,7 @@ st.markdown(
     f"""
     <div style="display: flex; align-items: center; justify-content: flex-start;">
         <h2 style='margin-right: 20px;'>Luis Carretero</h2>
-        <a href="https://www.linkedin.com/in/claudio-desco-serrano-b787991a8/">
+        <a href="https://www.linkedin.com/in/luis-carretero-lopez/">
             <img src="data:image/png;base64,{encoded_string}" width="60">
         </a>
         <a href="https://github.com/luiscarlop">
@@ -320,7 +320,7 @@ st.markdown(
 )
 
 
-luis_path = "data/stored_pictures/photo.jpg"
+luis_path = "data/stored_pictures/IMG_4446.jpeg"
 luis_image = cv2.imread(luis_path)
 lu_rgb = cv2.cvtColor(luis_image, cv2.COLOR_BGR2RGB)
 new_width = 265
@@ -333,7 +333,12 @@ with col5:
     )
 with col6:
     st.markdown(
-        """<h7 style='text-align: center; '>Hola caracola tu texto aqui</h7>""",
+        """<h7 style='text-align: center; '>My name is Luis Carretero, and I am a telecommunications systems technician currently pursuing a degree in
+        Telecommunications Systems Engineering at the Polytechnic University of Cartagena (UPCT).
+        In addition to my studies, I have extensively trained in Data Science, acquiring skills in data analysis, machine learning, and statistical modeling.
+
+        I am passionate about developing projects in data science and artificial intelligence like Judge AI.
+        My comprehensive background in telecommunications and data science equips me with the skills to contribute to innovative solutions and advancements in technology.</h7>""",
         unsafe_allow_html=True,
     )
 
@@ -374,9 +379,11 @@ with col5:
 
 with col6:
     st.markdown(
-        """<h7 style='text-align: center; '>Claudio Desco, is a multifaceted professional with equal expertise in Marketing, Tourism, and Data Science. Claudio’s strong marketing background, coupled with his degree in Tourism and a bootcamp in Data Science, allows him to craft strategies that are both innovative and globally relevant
-        At Judge AI, he applies his diverse skill set, using data-driven insights to inform marketing decisions and artificial intelligence to optimize outcomes. His work is characterized by a comprehensive understanding of global trends, a knack for extracting meaningful insights from data, and the ability to translate these into effective marketing strategies.
-        In summary, Claudio Desco exemplifies the potency of cross-disciplinary proficiency. His distinctive amalgamation of expertise in Marketing, Tourism, and Data Science, coupled with his unwavering dedication to innovation at Judge AI, places him as a leading figure in his domain.</h7>""",
+        """<h7 style='text-align: center; '>I’m Claudio Desco, a professional with a diverse skill set spanning Marketing, Tourism, and Data Science. My solid foundation in marketing,
+        enriched by my academic background in Tourism and a bootcamp in Data Science, empowers me to devise strategies that are both innovative and globally relevant. At Judge AI, I leverage my varied expertise,
+        using data-driven insights to shape marketing decisions and harnessing the power of artificial intelligence to optimize results. My work is marked by a deep understanding of global trends, an ability to glean meaningful insights from data,
+        and the knack to transform these insights into effective marketing strategies. In essence, I embody the power of interdisciplinary proficiency. My unique blend of expertise in Marketing, Tourism, and Data Science, combined with my steadfast
+        commitment to innovation at Judge AI, positions me as a trailblazer in my field.</h7>""",
         unsafe_allow_html=True,
     )
 
@@ -408,7 +415,7 @@ st.markdown(
 )
 
 
-noe_path = "data/stored_pictures/photo.jpg"
+noe_path = "data/stored_pictures/foto carnet noelia.jpg"
 noe_image = cv2.imread(noe_path)
 noe_rgb = cv2.cvtColor(noe_image, cv2.COLOR_BGR2RGB)
 new_width = 265
@@ -422,10 +429,12 @@ with col5:
 
 with col6:
     st.markdown(
-        """<h7 style='text-align: center; '>Hola caracola aqui tu texto</h7>""",
+        """<h7 style='text-align: center; '>As a dynamic and forward-thinking professional, I’ve spent the last 5 years making waves in the marketing and sales industry. Now, I’m channeling my energy into the exciting world of data science.
+        This new venture allows me to stretch my skills and set ambitious new targets. Currently, I’m actively updating my networks with the latest developments in my data analysis projects. I’m always open for a chat, so feel free to reach out
+        if you have any questions or if there’s anything you’d like to discuss..</h7>""",
         unsafe_allow_html=True,
     )
 
 col9, col10 = st.columns([1, 1])
 with col9:
-    st.markdown(":e-mail: tuemail@mail.com")
+    st.markdown(":e-mail: noeliavergaran@gmail.com")
