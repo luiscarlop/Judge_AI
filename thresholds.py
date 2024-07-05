@@ -14,9 +14,9 @@ def get_thresholds():
     thresholds = {
                     'HIP_KNEE_VERT': _ANGLE_HIP_KNEE_VERT,
 
-                    'KNEE_THRESH'  : [15, 80, 95],
+                    'KNEE_THRESH'  : [15, 80, 90],
 
-                    'OFFSET_THRESH'    : 35.0,
+                    'OFFSET_THRESH'    : 60.0,
                     # 'INACTIVE_THRESH'  : 15.0,
 
                     'CNT_FRAME_THRESH' : 50

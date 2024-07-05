@@ -6,7 +6,7 @@ from utils import find_angle, get_landmark_features, draw_text, draw_dotted_line
 
 class FSM_squat:
 
-    def __init__(self, thresholds, flip_frame=False):
+    def __init__(self, thresholds, flip_frame=False, pre_trained=True):
 
         # Flip the frame or not.
         self.flip_frame = flip_frame
@@ -23,18 +23,21 @@ class FSM_squat:
         # set radius to draw arc
         self.radius = 20
 
-        # Colors in RGB format.
+        # Select model for pose estimation. True = Pre-trained model, False = Custom model.
+        self.pre_trained = pre_trained
+
+        # Colors in BGR format.
         self.COLORS = {
-                        "blue": (0, 127, 255),
-                        "red": (255, 50, 50),
-                        "green": (0, 255, 127),
-                        "orange": (255, 135, 0),
-                        "light_green": (100, 233, 127),
-                        "yellow": (255, 255, 0),
+                        "blue": (255, 127, 0),
+                        "red": (50, 50, 225),
+                        "green": (127, 255, 0),
+                        "orange": (0, 135, 255),
+                        "light_green": (127, 233, 100),
+                        "yellow": (0, 255, 255),
                         "magenta": (255, 0, 255),
                         "white": (255, 255, 255),
-                        "cyan": (0, 255, 255),
-                        "light_blue": (102, 204, 255),
+                        "cyan": (255, 255, 0),
+                        "light_blue": (255, 204, 102),
                         "black": (0, 0, 0),  # añadido
         }
 
@@ -77,14 +80,22 @@ class FSM_squat:
                                 "DISPLAY_TEXT": np.full((4,), False),
                                 "COUNT_FRAMES": np.zeros((4,), dtype=np.int64),
 
+                                "VALID_SQUAT": False,
                                 "LOWER_HIPS": False,
-                                "INCORRECT_POSTURE": False,
+                                "NO LIFT": False,
 
                                 "prev_state": None,
                                 "curr_state": None,
                                 
                                 "SQUAT_COUNT": 0,
                                 "IMPROPER_SQUAT": 0,
+        }
+
+        self.FEEDBACK_ID_MAP = {
+                                0: ('BEND BACKWARDS', 215, (0, 153, 255)),
+                                1: ('BEND FORWARD', 215, (0, 153, 255)),
+                                2: ('KNEE FALLING OVER TOE', 170, (255, 80, 80)),
+                                3: ('SQUAT TOO DEEP', 125, (255, 80, 80))
         }
 
         self.valid_squat = {
@@ -143,10 +154,10 @@ class FSM_squat:
         If the state is 's2' and 's3' is not in the sequence, then append 's2' to the sequence.
         If the state is 's3' and 's2' is in the sequence, then append 's3' to the sequence.
         """
-        if curr_state == 's1':
-            if (('s1' not in self.state_tracker['state_seq']) and (len(self.state_tracker['state_seq']) == 0)) or \
-                (('s1' in self.state_tracker['state_seq']) and (self.state_tracker['state_seq'][-1] == 's2')):
-                self.state_tracker['state_seq'].append(curr_state)
+        # if curr_state == 's1':
+        #     if (('s1' not in self.state_tracker['state_seq']) and (len(self.state_tracker['state_seq']) == 0)) or \
+        #         (('s1' in self.state_tracker['state_seq']) and (self.state_tracker['state_seq'][-1] == 's2')):
+        #         self.state_tracker['state_seq'].append(curr_state)
 
 
         if curr_state == 's2':
@@ -183,22 +194,22 @@ class FSM_squat:
 
             if lift:
                 draw_text(
-                            self.image, 
+                            frame, 
                             "GOOD LIFT", 
                             pos=(50, 50), 
                             font=self.font, 
                             text_color=self.COLORS["white"], 
-                            font_color_bg=self.COLORS["green"],
+                            text_color_bg=self.COLORS["green"],
                 )
 
             else:
                 draw_text(
-                            self.image, 
+                            frame, 
                             "NO REP", 
                             pos=(50, 50), 
                             font=self.font, 
                             text_color=self.COLORS["white"], 
-                            font_color_bg=self.COLORS["red"],
+                            text_color_bg=self.COLORS["red"],
                 )
 
             for idx in np.where(c_frame)[0]:
@@ -231,11 +242,21 @@ class FSM_squat:
                                 get_landmark_features(ps_lm.landmark, self.dict_features, 'right', frame_width, frame_height)
 
             offset_angle = find_angle(left_shldr_coord, right_shldr_coord, nose_coord)
-            print(offset_angle,self.thresholds)
+            # print(offset_angle,self.thresholds)
 
             # Camera is not aligned properly --> It is facing the user
-            if offset_angle > self.thresholds:  # eliminado ['OFFSET_THRESH']
-                
+            if offset_angle > self.thresholds['OFFSET_THRESH']:
+
+                cv2.circle(frame, nose_coord, 7, self.COLORS['white'], -1)
+                cv2.circle(frame, left_shldr_coord, 7, self.COLORS['yellow'], -1)
+                cv2.circle(frame, right_shldr_coord, 7, self.COLORS['magenta'], -1)
+
+                cv2.line(frame, left_shldr_coord, nose_coord, self.COLORS['light_blue'], 4, lineType=self.linetype)
+                cv2.line(frame, right_shldr_coord, nose_coord, self.COLORS['light_blue'], 4, lineType=self.linetype)
+
+                if self.flip_frame:
+                    frame = cv2.flip(frame, 1)
+
                 draw_text(
                     frame, 
                     'CAMERA NOT ALIGNED PROPERLY', 
@@ -257,6 +278,7 @@ class FSM_squat:
                 self.state_tracker['prev_state'] =  None
                 self.state_tracker['curr_state'] = None
 
+            # Camera is aligned properly
             else: 
                 
                 # Calculate the distance between the shoulders and the hips.
@@ -294,7 +316,7 @@ class FSM_squat:
 
                     multiplier = 1    # Right side
 
-                # ------------------- Verical Angle calculation --------------
+                # ------------------- Vertical Angle calculation --------------
                 
                 hip_vertical_angle = find_angle(shldr_coord, np.array([hip_coord[0], 0]), hip_coord)
                 cv2.ellipse(frame, hip_coord, (30, 30), 
@@ -350,17 +372,16 @@ class FSM_squat:
 
                 if current_state == 's1':
                     
-                    lift = self._check_movement()
+                    # lift = self._check_movement()
 
-                    if len(self.state_tracker['state_seq']) == 5 and self._check_movement():
+                    if len(self.state_tracker['state_seq']) == 3 and not self.state_tracker['NO LIFT']:
                         self.state_tracker['SQUAT_COUNT']+=1
+                        self.state_tracker['VALID_SQUAT'] = True
+
                         
-                        self._show_feedback(lift)
-                        
-                    elif 's2' in self.state_tracker['state_seq'] and len(self.state_tracker['state_seq'])==3:
+                    elif 's2' in self.state_tracker['state_seq'] and len(self.state_tracker['state_seq']) == 1:
                         self.state_tracker['IMPROPER_SQUAT']+=1
-                        
-                        self._show_feedback(lift)
+                        self.state_tracker['VALID_SQUAT'] = False
                         
                     
                     self.state_tracker['state_seq'] = []
@@ -372,7 +393,10 @@ class FSM_squat:
                     if self.thresholds['KNEE_THRESH'][0] < knee_vertical_angle < self.thresholds['KNEE_THRESH'][1] and \
                         self.state_tracker['state_seq'].count('s2')==1:
                         
-                        self.state_tracker['LOWER_HIPS'] = True
+                        self.state_tracker['NO LIFT'] = True
+
+                    elif self.thresholds['KNEE_THRESH'][2] < knee_vertical_angle:
+                        self.state_tracker['NO LIFT'] = False
 
                 #- ---------------------------------------------------------------------------------------------------
 
@@ -391,7 +415,7 @@ class FSM_squat:
 
                 self.state_tracker['COUNT_FRAMES'][self.state_tracker['DISPLAY_TEXT']]+=1
 
-                frame = self._show_feedback(frame, self.state_tracker['COUNT_FRAMES'], self.FEEDBACK_ID_MAP, self.state_tracker['LOWER_HIPS'])
+                frame = self._show_feedback(frame, self.state_tracker['COUNT_FRAMES'], self.FEEDBACK_ID_MAP, self.state_tracker['VALID_SQUAT'])
 
 
 
@@ -406,7 +430,7 @@ class FSM_squat:
                     pos=(int(frame_width*0.68), 30),
                     text_color=(255, 255, 230),
                     font_scale=0.7,
-                    text_color_bg=(18, 185, 0)
+                    text_color_bg=self.COLORS['light_green']
                 )  
                 
 
@@ -416,7 +440,7 @@ class FSM_squat:
                     pos=(int(frame_width*0.68), 80),
                     text_color=(255, 255, 230),
                     font_scale=0.7,
-                    text_color_bg=(221, 0, 0),
+                    text_color_bg=self.COLORS['red']
                     
                 )  
                 
@@ -428,21 +452,21 @@ class FSM_squat:
         
         else:
 
-            if self.flip_frame:
-                frame = cv2.flip(frame, 1)
+            # if self.flip_frame:
+            #     frame = cv2.flip(frame, 1)
 
-            end_time = time.perf_counter()
-            self.state_tracker['INACTIVE_TIME'] += end_time - self.state_tracker['start_inactive_time']
+            # end_time = time.perf_counter()
+            # self.state_tracker['INACTIVE_TIME'] += end_time - self.state_tracker['start_inactive_time']
 
-            display_inactivity = False
+            # display_inactivity = False
 
-            if self.state_tracker['INACTIVE_TIME'] >= self.thresholds['INACTIVE_THRESH']:
-                self.state_tracker['SQUAT_COUNT'] = 0
-                self.state_tracker['IMPROPER_SQUAT'] = 0
+            # if self.state_tracker['INACTIVE_TIME'] >= self.thresholds['INACTIVE_THRESH']:
+            self.state_tracker['SQUAT_COUNT'] = 0
+            self.state_tracker['IMPROPER_SQUAT'] = 0
                 # cv2.putText(frame, 'Resetting SQUAT_COUNT due to inactivity!!!', (10, frame_height - 25), self.font, 0.7, self.COLORS['blue'], 2)
-                display_inactivity = True
+                # display_inactivity = True
 
-            self.state_tracker['start_inactive_time'] = end_time
+            # self.state_tracker['start_inactive_time'] = end_time
 
             draw_text(
                     frame, 
@@ -469,7 +493,7 @@ class FSM_squat:
             
             self.state_tracker['prev_state'] =  None
             self.state_tracker['curr_state'] = None
-            self.state_tracker['INACTIVE_TIME_FRONT'] = 0.0
+            # self.state_tracker['INACTIVE_TIME_FRONT'] = 0.0
             self.state_tracker['INCORRECT_POSTURE'] = False
             self.state_tracker['DISPLAY_TEXT'] = np.full((5,), False)
             self.state_tracker['COUNT_FRAMES'] = np.zeros((5,), dtype=np.int64)

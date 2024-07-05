@@ -202,17 +202,7 @@ def add_annotations_from_file(file: str, combined_root: ET.Element) -> ET.Elemen
     for image in root.findall("image"):
         combined_root.append(image)
 
-def parse_array(str_array: np.ndarray, parser: str = "float") -> np.ndarray:
-    """Parse a string array into a numpy array.
 
-    Args:
-        str_array (np.ndarray): string array to parse
-        parser (str, optional): parser function to use. Defaults to "float".
-
-    Returns:
-        np.ndarray: parsed numpy array
-    """    
-    return np.array(list(map(parser, str_array)))
 
 def pair_annotations_with_images(labels_dir: str) -> dict:
     """Pair image paths with their corresponding labels.
@@ -230,36 +220,25 @@ def pair_annotations_with_images(labels_dir: str) -> dict:
 
     for image in labels_root.findall("image"):
         img_name = image.get("name")
+        img = plt.imread(os.path.join(DATA_DIR / 'dataset_train', img_name))
         skeletons = []
+        img_data = {}
+
+        img_data['image_path'] = os.path.join(DATA_DIR / 'dataset_train', img_name)
+        img_data['image_height'], img_data['image_width'] = img.shape[:2]
         
         for skeleton in image.findall("skeleton"):
-            skeleton_nodes = []
+            # skeleton_nodes = []
             for point in skeleton.findall("points"):
                 x = point.get('points').split(',')[0]
                 y = point.get('points').split(',')[1]
-                skeleton_nodes.append((x, y))
-            skeletons.append(skeleton_nodes)
-        annotations_dict[img_name] = skeletons
-                
+                # skeleton_nodes.append((x, y))
+                skeletons.append([x, y])
+            img_data['keypoints'] = skeletons
+        annotations_dict[img_name] = img_data  
 
     return annotations_dict
 
-def reshape_annotations(annotations: dict) -> Iterator:
-    """Flatten annotations into a list of tuples.
-
-    Args:
-        annotations (dict): dictionary of annotations
-
-    Returns:
-        Iterator: iterator of flattened annotations
-    """
-    for img_name, labels in annotations.items():
-        labels = np.array(labels).flatten().reshape(-1, 2)
-        label_list = [parse_array(label) for label in labels]
-
-        annotations[img_name] = label_list
-    
-    return annotations
 
 def draw_keypoints(image: np.ndarray, keypoints: np.ndarray) -> np.ndarray:
     """Draw keypoints on an image.
@@ -301,17 +280,3 @@ def read_json(json_path: str) -> dict:
         data = json.load(f)
 
     return data
-
-def flow(X: str, y: str) -> Iterator:
-
-    X: list = os.listdir(X)
-    y: dict = read_json(y)
-
-    for img_path in X:
-        labels = y[img_path.split('/')[-1]]
-        img = load_img(img_path)
-
-        yield {
-            "x" : img,
-            "y" : labels
-        }
