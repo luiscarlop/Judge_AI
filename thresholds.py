@@ -16,7 +16,7 @@ def get_thresholds():
 
                     'KNEE_THRESH'  : [15, 80, 90],
 
-                    'OFFSET_THRESH'    : 60.0,
+                    'OFFSET_THRESH'    : 70.0,
                     # 'INACTIVE_THRESH'  : 15.0,
 
                     'CNT_FRAME_THRESH' : 50
