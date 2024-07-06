@@ -120,8 +120,8 @@ page_names_to_funcs = {
     "🕵️‍♂️About_us": page4,
 }
 
-selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
-page_names_to_funcs[selected_page]()
+# selected_page = st.sidebar.selectbox("Select a page", page_names_to_funcs.keys())
+# page_names_to_funcs[selected_page]()
 
 
 option = st.selectbox(

@@ -12,11 +12,12 @@ from streamlit_webrtc import VideoProcessorBase, webrtc_streamer
 FSM = FSM_squat(get_thresholds())
 
 mp_drawing = mp.solutions.drawing_utils
-mp_pose = mp.solutions.pose
+# mp_pose = mp.solutions.pose
 
 class VideoProcessor(VideoProcessorBase):
         def __init__(self):
-            self.pose = mp_pose.Pose(static_image_mode=False)
+            self.mp_pose = mp.solutions.pose
+            self.pose = self.mp_pose.Pose(static_image_mode=False)
 
         def transform(self, frame):
             frame = frame.to_ndarray(format="bgr24")
@@ -29,7 +30,8 @@ class VideoProcessor(VideoProcessorBase):
 
 class PhotoProcessor:
     def __init__(self):
-        self.pose = mp_pose.Pose(static_image_mode=True)
+        self.mp_pose = mp.solutions.pose
+        self.pose = self.mp_pose.Pose(static_image_mode=True)
 
     def process(self, np_image: np.ndarray):
         with self.pose as pose:
