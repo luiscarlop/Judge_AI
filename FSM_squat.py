@@ -278,6 +278,9 @@ class FSM_squat:
                 self.state_tracker['prev_state'] =  None
                 self.state_tracker['curr_state'] = None
 
+                self.state_tracker['SQUAT_COUNT'] = 0
+                self.state_tracker['IMPROPER_SQUAT'] = 0
+
             # Camera is aligned properly
             else: 
                 
@@ -474,7 +477,7 @@ class FSM_squat:
                     pos=(int(frame_width*0.68), 30),
                     text_color=(255, 255, 230),
                     font_scale=0.7,
-                    text_color_bg=(18, 185, 0)
+                    text_color_bg=self.COLORS['light_green']
                 )  
                 
 
@@ -484,7 +487,7 @@ class FSM_squat:
                     pos=(int(frame_width*0.68), 80),
                     text_color=(255, 255, 230),
                     font_scale=0.7,
-                    text_color_bg=(221, 0, 0),
+                    text_color_bg=self.COLORS['red']
                     
                 )  
             
