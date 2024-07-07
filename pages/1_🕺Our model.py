@@ -8,6 +8,9 @@ import av
 import mediapipe as mp
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import io
+from judge_pose import Manual_Pose_with_array
+from PIL import ImageFile
+import threading
 
 
 st.set_page_config(
@@ -144,164 +147,88 @@ if option == "Intoduction":
     st.write("If you just want to upload a photo, you can go straight to it.")
     st.write("Let's go!")
 
-
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 if option == "Live video":
     #######################################################################################
-    st.subheader("Live video")
-    st.write("Click on the start button and start doing squats.")
-    st.write("When you squat low enough, an indicator will appear on the screen")
-    st.write(
-        "Throughout the process, you will receive outputs indicating the state of your squat. \
-    Once you finish your squat, it will be added to your score."
-    )
-    mp_drawing = mp.solutions.drawing_utils
-    mp_pose = mp.solutions.pose
+    # st.subheader("Live video")
+    # st.write("Click on the start button and start doing squats.")
+    # st.write("When you squat low enough, an indicator will appear on the screen")
+    # st.write(
+    #     "Throughout the process, you will receive outputs indicating the state of your squat. \
+    # Once you finish your squat, it will be added to your score."
+    # )
+    # mp_drawing = mp.solutions.drawing_utils
+    # manual_pose = Manual_Pose_with_array()
 
-    class VideoProcessor(VideoTransformerBase):
-        def __init__(self):
-            self.pose = mp_pose.Pose(static_image_mode=False)
+    # class VideoProcessor(VideoTransformerBase):
+    #     def __init__(self):
+    #         self.pose = Manual_Pose_with_array().pose_landmarks
+    #         self.lock = threading.Lock()
+    #         self.img_container = {"img": None}
 
-        def transform(self, frame):
-            frame = frame.to_ndarray(format="bgr24")
+    #     def video_frame_callback(self, frame):
+    #         frame = frame.to_ndarray(format="bgr24")
+    #         height, width, _ = frame.shape
+    #         results = self.pose.process(frame)
+    #         if results.pose_landmarks is not None:
+    #             x0 = int(self.pose["x"][0])
+    #             y0 = int(self.pose["y"][0])
+    #             x1 = int(self.pose["x"][1])
+    #             y1 = int(self.pose["y"][1])
+    #             x2 = int(self.pose["x"][2])
+    #             y2 = int(self.pose["y"][2])
+    #             x3 = int(self.pose["x"][3])
+    #             y3 = int(self.pose["y"][3])
+    #             x4 = int(self.pose["x"][4])
+    #             y4 = int(self.pose["y"][4])
+    #             x5 = int(self.pose["x"][5])
+    #             y5 = int(self.pose["y"][5])
+    #             x6 = int(self.pose["x"][6])
+    #             y6 = int(self.pose["y"][6])
+    #             x7 = int(self.pose["x"][7])
+    #             y7 = int(self.pose["y"][7])
+    #             x8 = int(self.pose["x"][8])
+    #             y8 = int(self.pose["y"][8])
+    #             x9 = int(self.pose["x"][9])
+    #             y9 = int(self.pose["y"][9])
+    #             cv2.line(frame, (x0, y0), (x3, y3), (255, 255, 255), 3)
+    #             cv2.line(frame, (x1, y1), (x3, y3), (255, 255, 255), 3)
+    #             cv2.line(frame, (x2, y2), (x3, y3), (255, 255, 255), 3)
+    #             cv2.line(frame, (x4, y4), (x5, y5), (255, 255, 255), 3)
+    #             cv2.line(frame, (x4, y4), (x0, y0), (255, 255, 255), 3)
+    #             cv2.line(frame, (x5, y5), (x1, y1), (255, 255, 255), 3)
+    #             cv2.line(frame, (x4, y4), (x6, y6), (255, 255, 255), 3)
+    #             cv2.line(frame, (x5, y5), (x7, y7), (255, 255, 255), 3)
+    #             cv2.line(frame, (x6, y6), (x8, y8), (255, 255, 255), 3)
+    #             cv2.line(frame, (x7, y7), (x9, y9), (255, 255, 255), 3)
+    #             puntuacion = []
+    #             if y4 >= y6 - 30 and y4 <= y6 + 30 or y5 >= y7 - 30 and y5 <= y7 + 30:
+    #                 cv2.line(frame, (x4, y4), (x6, y6), (0, 255, 255), 3)
+    #                 cv2.line(frame, (x5, y5), (x7, y7), (0, 255, 255), 3)
+    #                 puntos = 2
+    #                 puntuacion.append(puntos)
+    #             if sum(puntuacion) >= 2:
+    #                 font = cv2.FONT_HERSHEY_SIMPLEX
+    #                 cv2.putText(
+    #                     img=frame,
+    #                     text="PARALLEL POSITION",
+    #                     org=(int(width * 0.68), 30),
+    #                     fontFace=font,
+    #                     fontScale=0.7,
+    #                     color=(255, 255, 230),
+    #                     thickness=2,
+    #                     lineType=cv2.LINE_AA,
+    #                 )
+    #             with self.lock:
+    #                 self.img_container["img"] = frame
+    #         return frame
 
-            height, width, _ = frame.shape
-            # img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            results = self.pose.process(frame)
-
-            if results.pose_landmarks is not None:
-                print(
-                    int(
-                        results.pose_landmarks.landmark[
-                            mp_pose.PoseLandmark.RIGHT_SHOULDER
-                        ].z
-                    )
-                )  # saca la coordenada del hombro derecho, medida en cm se multiplica por el ancho para sacar la medida en pixeles
-                x11 = int(results.pose_landmarks.landmark[11].x * width)
-                y11 = int(results.pose_landmarks.landmark[11].y * height)
-
-                x12 = int(results.pose_landmarks.landmark[12].x * width)
-                y12 = int(results.pose_landmarks.landmark[12].y * height)
-
-                x13 = int(results.pose_landmarks.landmark[13].x * width)
-                y13 = int(results.pose_landmarks.landmark[13].y * height)
-
-                x14 = int(results.pose_landmarks.landmark[14].x * width)
-                y14 = int(results.pose_landmarks.landmark[14].y * height)
-
-                x15 = int(results.pose_landmarks.landmark[15].x * width)
-                y15 = int(results.pose_landmarks.landmark[15].y * height)
-
-                x16 = int(results.pose_landmarks.landmark[16].x * width)
-                y16 = int(results.pose_landmarks.landmark[16].y * height)
-
-                # x17= int(results.pose_landmarks.landmark[17].x * width)
-                # y17= int(results.pose_landmarks.landmark[17].y * height)
-
-                # x18= int(results.pose_landmarks.landmark[18].x * width)
-                # y18= int(results.pose_landmarks.landmark[18].y * height)
-
-                # x19= int(results.pose_landmarks.landmark[19].x * width)
-                # y19= int(results.pose_landmarks.landmark[19].y * height)
-
-                # x20= int(results.pose_landmarks.landmark[20].x * width)
-                # y20= int(results.pose_landmarks.landmark[20].y * height)
-
-                # x21= int(results.pose_landmarks.landmark[21].x * width)
-                # y21= int(results.pose_landmarks.landmark[21].y * height)
-
-                # x22= int(results.pose_landmarks.landmark[22].x * width)
-                # y22= int(results.pose_landmarks.landmark[22].y * height)
-
-                x23 = int(results.pose_landmarks.landmark[23].x * width)
-                y23 = int(results.pose_landmarks.landmark[23].y * height)
-
-                x24 = int(results.pose_landmarks.landmark[24].x * width)
-                y24 = int(results.pose_landmarks.landmark[24].y * height)
-
-                x25 = int(results.pose_landmarks.landmark[25].x * width)
-                y25 = int(results.pose_landmarks.landmark[25].y * height)
-
-                x26 = int(results.pose_landmarks.landmark[26].x * width)
-                y26 = int(results.pose_landmarks.landmark[26].y * height)
-
-                x27 = int(results.pose_landmarks.landmark[27].x * width)
-                y27 = int(results.pose_landmarks.landmark[27].y * height)
-
-                x28 = int(results.pose_landmarks.landmark[28].x * width)
-                y28 = int(results.pose_landmarks.landmark[28].y * height)
-
-                puntuacion = list()
-
-                print(x24, y24, x26, y26, x23, y23, x25, y25, x27, y27)
-                cv2.line(
-                    frame, (x11, y11), (x12, y12), (255, 255, 255), 3
-                )  # unión de punto xy1 con xy2
-                cv2.line(frame, (x11, y11), (x13, y13), (255, 255, 255), 3)
-                cv2.line(
-                    frame, (x11, y11), (x23, y23), (255, 255, 255), 3
-                )  # unión de punto xy2 con xy3
-                cv2.line(frame, (x13, y13), (x15, y15), (255, 255, 255), 3)
-                cv2.line(frame, (x12, y12), (x14, y14), (255, 255, 255), 3)
-                cv2.line(frame, (x14, y14), (x16, y16), (255, 255, 255), 3)
-                cv2.line(frame, (x12, y12), (x24, y24), (255, 255, 255), 3)
-                cv2.line(frame, (x24, y24), (x26, y26), (255, 255, 255), 3)
-                cv2.line(frame, (x24, y24), (x23, y23), (255, 255, 255), 3)
-                cv2.line(frame, (x26, y26), (x28, y28), (255, 255, 255), 3)
-                cv2.line(frame, (x23, y23), (x25, y25), (255, 255, 255), 3)
-                cv2.line(frame, (x25, y25), (x27, y27), (255, 255, 255), 3)
-
-                cv2.circle(frame, (x11, y11), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(frame, (x12, y12), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(frame, (x13, y13), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(frame, (x15, y15), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(frame, (x14, y14), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(frame, (x16, y16), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(frame, (x24, y24), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(frame, (x26, y26), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(frame, (x28, y28), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(
-                    frame, (x23, y23), 6, (43, 214, 38), -1
-                )  # color azul corrdenadas según indice del dibujo
-                cv2.circle(
-                    frame, (x25, y25), 6, (43, 214, 38), -1
-                )  # color azul corrdenadas según indice del dibujo
-                cv2.circle(frame, (x27, y27), 6, (43, 214, 38), -1)
-
-                if (
-                    y24 >= y26 - 30
-                    and y24 <= y26 + 30
-                    and y23 >= y25 - 30
-                    and y23 <= y25 + 30
-                ):
-                    cv2.line(
-                        frame, (x24, y24), (x26, y26), (0, 255, 255), 3
-                    )  # unión de punto xy1 con xy2
-                    cv2.line(
-                        frame, (x23, y23), (x25, y25), (0, 255, 255), 3
-                    )  # unión de punto xy1 con xy2
-
-                    puntos = 2
-                    puntuacion.append(puntos)
-                    print(f" puntuación: {sum(puntuacion)} ")
-
-                if sum(puntuacion) >= 2:
-
-                    font = cv2.FONT_HERSHEY_SIMPLEX
-
-                    cv2.putText(
-                        img=frame,
-                        text="GOOD JOB",
-                        org=(200, 200),
-                        fontFace=font,
-                        fontScale=2,
-                        color=(255, 255, 255),
-                        thickness=2,
-                        lineType=cv2.LINE_AA,
-                    )
-
-            return frame
-
-    webrtc_streamer(key="example", video_transformer_factory=VideoProcessor)
+    # webrtc_streamer(key="example", video_transformer_factory=VideoProcessor)
+    soon = cv2.imread("data/stored_pictures/soon.jpg")
+    soon_rgb = cv2.cvtColor(soon, cv2.COLOR_BGR2RGB)
+    st.image(soon_rgb)
+else:
+    st.write("No image captured. Please capture an image to proceed.")
 
 
 ###################################################################################################
@@ -312,155 +239,80 @@ if option == "Photo mode":
     st.write(
         "Take a photo when you’re at the lowest point of your squat. Please ask someone at the gym for help to avoid injuries!"
     )
-    st.write("Oncet the photo is takes you can check how good you were doing it.")
+    st.write("Once the photo is taked you can check how good you were doing it.")
     st.write(
         "Even if this process isn’t in real-time, you’ll earn a point if your photo shows that you’ve gone bellow the parallel position in your squat."
     )
     img_file_buffer = st.camera_input("Take a picture!")
-    mp_drawing = mp.solutions.drawing_utils
-    mp_pose = mp.solutions.pose
-
+    manual_pose = Manual_Pose_with_array()
     if img_file_buffer is not None:
         # Convert the image to a numpy array
         np_image = np.asarray(bytearray(img_file_buffer.read()), dtype=np.uint8)
 
-        with mp_pose.Pose(
-            static_image_mode=True
-        ) as pose:  # PARA VIDEOS PONER FALSE /TRUE ES PARA FOTOS
-            image = cv2.imdecode(np_image, cv2.IMREAD_COLOR)
-            # image = cv2.resize(src=image, dsize=(642, 1141))
-            height, width, _ = image.shape
-            image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-            results = pose.process(image_rgb)
-
-            if results.pose_landmarks is not None:
-
-                x11 = int(results.pose_landmarks.landmark[11].x * width)
-                y11 = int(results.pose_landmarks.landmark[11].y * height)
-
-                x12 = int(results.pose_landmarks.landmark[12].x * width)
-                y12 = int(results.pose_landmarks.landmark[12].y * height)
-
-                x13 = int(results.pose_landmarks.landmark[13].x * width)
-                y13 = int(results.pose_landmarks.landmark[13].y * height)
-
-                x14 = int(results.pose_landmarks.landmark[14].x * width)
-                y14 = int(results.pose_landmarks.landmark[14].y * height)
-
-                x15 = int(results.pose_landmarks.landmark[15].x * width)
-                y15 = int(results.pose_landmarks.landmark[15].y * height)
-
-                x16 = int(results.pose_landmarks.landmark[16].x * width)
-                y16 = int(results.pose_landmarks.landmark[16].y * height)
-
-                # x17= int(results.pose_landmarks.landmark[17].x * width)
-                # y17= int(results.pose_landmarks.landmark[17].y * height)
-
-                # x18= int(results.pose_landmarks.landmark[18].x * width)
-                # y18= int(results.pose_landmarks.landmark[18].y * height)
-
-                # x19= int(results.pose_landmarks.landmark[19].x * width)
-                # y19= int(results.pose_landmarks.landmark[19].y * height)
-
-                # x20= int(results.pose_landmarks.landmark[20].x * width)
-                # y20= int(results.pose_landmarks.landmark[20].y * height)
-
-                # x21= int(results.pose_landmarks.landmark[21].x * width)
-                # y21= int(results.pose_landmarks.landmark[21].y * height)
-
-                # x22= int(results.pose_landmarks.landmark[22].x * width)
-                # y22= int(results.pose_landmarks.landmark[22].y * height)
-
-                x23 = int(results.pose_landmarks.landmark[23].x * width)
-                y23 = int(results.pose_landmarks.landmark[23].y * height)
-
-                x24 = int(results.pose_landmarks.landmark[24].x * width)
-                y24 = int(results.pose_landmarks.landmark[24].y * height)
-
-                x25 = int(results.pose_landmarks.landmark[25].x * width)
-                y25 = int(results.pose_landmarks.landmark[25].y * height)
-
-                x26 = int(results.pose_landmarks.landmark[26].x * width)
-                y26 = int(results.pose_landmarks.landmark[26].y * height)
-
-                x27 = int(results.pose_landmarks.landmark[27].x * width)
-                y27 = int(results.pose_landmarks.landmark[27].y * height)
-
-                x28 = int(results.pose_landmarks.landmark[28].x * width)
-                y28 = int(results.pose_landmarks.landmark[28].y * height)
-
-                puntuacion = list()
-
+        image = cv2.imdecode(np_image, cv2.IMREAD_COLOR)
+        # image = cv2.resize(src=image, dsize=(642, 1141))
+        height, width, _ = image.shape
+        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        manual_pose.process(image_rgb)
+        if manual_pose.pose_landmarks is not None:
+            x0 = int(manual_pose.pose_landmarks["x"][0])
+            y0 = int(manual_pose.pose_landmarks["y"][0])
+            x1 = int(manual_pose.pose_landmarks["x"][1])
+            y1 = int(manual_pose.pose_landmarks["y"][1])
+            x2 = int(manual_pose.pose_landmarks["x"][2])
+            y2 = int(manual_pose.pose_landmarks["y"][2])
+            x3 = int(manual_pose.pose_landmarks["x"][3])
+            y3 = int(manual_pose.pose_landmarks["y"][3])
+            x4 = int(manual_pose.pose_landmarks["x"][4])
+            y4 = int(manual_pose.pose_landmarks["y"][4])
+            x5 = int(manual_pose.pose_landmarks["x"][5])
+            y5 = int(manual_pose.pose_landmarks["y"][5])
+            x6 = int(manual_pose.pose_landmarks["x"][6])
+            y6 = int(manual_pose.pose_landmarks["y"][6])
+            x7 = int(manual_pose.pose_landmarks["x"][7])
+            y7 = int(manual_pose.pose_landmarks["y"][7])
+            x8 = int(manual_pose.pose_landmarks["x"][8])
+            y8 = int(manual_pose.pose_landmarks["y"][8])
+            x9 = int(manual_pose.pose_landmarks["x"][9])
+            y9 = int(manual_pose.pose_landmarks["y"][9])
+            cv2.line(manual_pose.image, (x0, y0), (x3, y3), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x1, y1), (x3, y3), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x2, y2), (x3, y3), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x4, y4), (x5, y5), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x4, y4), (x0, y0), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x5, y5), (x1, y1), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x4, y4), (x6, y6), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x5, y5), (x7, y7), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x6, y6), (x8, y8), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x7, y7), (x9, y9), (255, 255, 255), 3)
+            puntuacion = []
+            if y4 >= y6 - 30 and y4 <= y6 + 30 or y5 >= y7 - 30 and y5 <= y7 + 30:
                 cv2.line(
-                    image, (x11, y11), (x12, y12), (255, 255, 255), 3
+                    manual_pose.image, (x4, y4), (x6, y6), (0, 255, 255), 3
                 )  # unión de punto xy1 con xy2
-                cv2.line(image, (x11, y11), (x13, y13), (255, 255, 255), 3)
                 cv2.line(
-                    image, (x11, y11), (x23, y23), (255, 255, 255), 3
-                )  # unión de punto xy2 con xy3
-                cv2.line(image, (x13, y13), (x15, y15), (255, 255, 255), 3)
-                cv2.line(image, (x12, y12), (x14, y14), (255, 255, 255), 3)
-                cv2.line(image, (x14, y14), (x16, y16), (255, 255, 255), 3)
-                cv2.line(image, (x12, y12), (x24, y24), (255, 255, 255), 3)
-                cv2.line(image, (x24, y24), (x26, y26), (255, 255, 255), 3)
-                cv2.line(image, (x24, y24), (x23, y23), (255, 255, 255), 3)
-                cv2.line(image, (x26, y26), (x28, y28), (255, 255, 255), 3)
-                cv2.line(image, (x23, y23), (x25, y25), (255, 255, 255), 3)
-                cv2.line(image, (x25, y25), (x27, y27), (255, 255, 255), 3)
-
-                cv2.circle(image, (x11, y11), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x12, y12), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x13, y13), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x15, y15), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x14, y14), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x16, y16), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x24, y24), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x26, y26), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x28, y28), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(
-                    image, (x23, y23), 6, (43, 214, 38), -1
-                )  # color azul corrdenadas según indice del dibujo
-                cv2.circle(
-                    image, (x25, y25), 6, (43, 214, 38), -1
-                )  # color azul corrdenadas según indice del dibujo
-                cv2.circle(image, (x27, y27), 6, (43, 214, 38), -1)
-
-                if (
-                    y24 >= y26 - 30
-                    and y24 <= y26 + 30
-                    and y23 >= y25 - 30
-                    and y23 <= y25 + 30
-                ):
-                    cv2.line(
-                        image, (x24, y24), (x26, y26), (0, 255, 255), 3
-                    )  # unión de punto xy1 con xy2
-                    cv2.line(
-                        image, (x23, y23), (x25, y25), (0, 255, 255), 3
-                    )  # unión de punto xy1 con xy2
-
-                    puntos = 2
-                    puntuacion.append(puntos)
-                    print(f" puntuación: {sum(puntuacion)} ")
-
-                    if sum(puntuacion) >= 2:
-
-                        font = cv2.FONT_HERSHEY_SIMPLEX
-
-                        cv2.putText(
-                            img=image,
-                            text="GOOD JOB",
-                            org=(200, 200),
-                            fontFace=font,
-                            fontScale=2,
-                            color=(255, 255, 255),
-                            thickness=2,
-                            lineType=cv2.LINE_AA,
-                        )
-                image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                # Convert the BGR image to RGB and display it in Streamlit
-                # image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                st.image(image_rgb)
+                    manual_pose.image, (x5, y5), (x7, y7), (0, 255, 255), 3
+                )  # unión de punto xy1 con xy2
+                puntos = 2
+                puntuacion.append(puntos)
+            if sum(puntuacion) >= 2:
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                cv2.putText(
+                    img=manual_pose.image,
+                    text="PARALLEL POSITION",
+                    org=(int(width * 0.68), 30),
+                    fontFace=font,
+                    fontScale=0.7,
+                    # text_color_bg=(127, 233, 100),
+                    color=(255, 255, 230),
+                    thickness=2,
+                    lineType=cv2.LINE_AA,
+                )
+            # image = cv2.resize(src = uu.image, dsize = (616,1096))
+            # image_rgb = cv2.cvtColor(manual_pose, cv2.COLOR_BGR2RGB)
+            # Convert the BGR image to RGB and display it in Streamlit
+            # image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            st.image(manual_pose.image)
     else:
         st.write("No image captured. Please capture an image to proceed.")
 
@@ -475,151 +327,74 @@ if option == "Upload a photo":
         "Even if this process isn’t in real-time, you’ll earn a point if your photo shows that you’ve gone below the parallel position in your squat."
     )
     uploaded_file = st.file_uploader("Choose a photo", type=["jpg", "png"])
-    mp_drawing = mp.solutions.drawing_utils
-    mp_pose = mp.solutions.pose
-
+    manual_pose = Manual_Pose_with_array()
     if uploaded_file is not None:
-        file_bytes = uploaded_file.read()
-        image = Image.open(io.BytesIO(file_bytes))
-        # st.image(image, caption="Uploaded Image.")
-        np_image = np.asarray(bytearray(file_bytes), dtype=np.uint8)
+        # Convert the image to a numpy array
+        np_image = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
 
-        with mp_pose.Pose(
-            static_image_mode=True
-        ) as pose:  # PARA VIDEOS PONER FALSE /TRUE ES PARA FOTOS
-            image = cv2.imdecode(np_image, cv2.IMREAD_COLOR)
-            # image = cv2.resize(src=image, dsize=(642, 1141))
-            height, width, _ = image.shape
-            image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-            results = pose.process(image_rgb)
-
-            if results.pose_landmarks is not None:
-
-                x11 = int(results.pose_landmarks.landmark[11].x * width)
-                y11 = int(results.pose_landmarks.landmark[11].y * height)
-
-                x12 = int(results.pose_landmarks.landmark[12].x * width)
-                y12 = int(results.pose_landmarks.landmark[12].y * height)
-
-                x13 = int(results.pose_landmarks.landmark[13].x * width)
-                y13 = int(results.pose_landmarks.landmark[13].y * height)
-
-                x14 = int(results.pose_landmarks.landmark[14].x * width)
-                y14 = int(results.pose_landmarks.landmark[14].y * height)
-
-                x15 = int(results.pose_landmarks.landmark[15].x * width)
-                y15 = int(results.pose_landmarks.landmark[15].y * height)
-
-                x16 = int(results.pose_landmarks.landmark[16].x * width)
-                y16 = int(results.pose_landmarks.landmark[16].y * height)
-
-                # x17= int(results.pose_landmarks.landmark[17].x * width)
-                # y17= int(results.pose_landmarks.landmark[17].y * height)
-
-                # x18= int(results.pose_landmarks.landmark[18].x * width)
-                # y18= int(results.pose_landmarks.landmark[18].y * height)
-
-                # x19= int(results.pose_landmarks.landmark[19].x * width)
-                # y19= int(results.pose_landmarks.landmark[19].y * height)
-
-                # x20= int(results.pose_landmarks.landmark[20].x * width)
-                # y20= int(results.pose_landmarks.landmark[20].y * height)
-
-                # x21= int(results.pose_landmarks.landmark[21].x * width)
-                # y21= int(results.pose_landmarks.landmark[21].y * height)
-
-                # x22= int(results.pose_landmarks.landmark[22].x * width)
-                # y22= int(results.pose_landmarks.landmark[22].y * height)
-
-                x23 = int(results.pose_landmarks.landmark[23].x * width)
-                y23 = int(results.pose_landmarks.landmark[23].y * height)
-
-                x24 = int(results.pose_landmarks.landmark[24].x * width)
-                y24 = int(results.pose_landmarks.landmark[24].y * height)
-
-                x25 = int(results.pose_landmarks.landmark[25].x * width)
-                y25 = int(results.pose_landmarks.landmark[25].y * height)
-
-                x26 = int(results.pose_landmarks.landmark[26].x * width)
-                y26 = int(results.pose_landmarks.landmark[26].y * height)
-
-                x27 = int(results.pose_landmarks.landmark[27].x * width)
-                y27 = int(results.pose_landmarks.landmark[27].y * height)
-
-                x28 = int(results.pose_landmarks.landmark[28].x * width)
-                y28 = int(results.pose_landmarks.landmark[28].y * height)
-
-                puntuacion = list()
-
+        image = cv2.imdecode(np_image, cv2.IMREAD_COLOR)
+        # image = cv2.resize(src=image, dsize=(642, 1141))
+        height, width, _ = image.shape
+        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        manual_pose.process(image_rgb)
+        if manual_pose.pose_landmarks is not None:
+            x0 = int(manual_pose.pose_landmarks["x"][0])
+            y0 = int(manual_pose.pose_landmarks["y"][0])
+            x1 = int(manual_pose.pose_landmarks["x"][1])
+            y1 = int(manual_pose.pose_landmarks["y"][1])
+            x2 = int(manual_pose.pose_landmarks["x"][2])
+            y2 = int(manual_pose.pose_landmarks["y"][2])
+            x3 = int(manual_pose.pose_landmarks["x"][3])
+            y3 = int(manual_pose.pose_landmarks["y"][3])
+            x4 = int(manual_pose.pose_landmarks["x"][4])
+            y4 = int(manual_pose.pose_landmarks["y"][4])
+            x5 = int(manual_pose.pose_landmarks["x"][5])
+            y5 = int(manual_pose.pose_landmarks["y"][5])
+            x6 = int(manual_pose.pose_landmarks["x"][6])
+            y6 = int(manual_pose.pose_landmarks["y"][6])
+            x7 = int(manual_pose.pose_landmarks["x"][7])
+            y7 = int(manual_pose.pose_landmarks["y"][7])
+            x8 = int(manual_pose.pose_landmarks["x"][8])
+            y8 = int(manual_pose.pose_landmarks["y"][8])
+            x9 = int(manual_pose.pose_landmarks["x"][9])
+            y9 = int(manual_pose.pose_landmarks["y"][9])
+            cv2.line(manual_pose.image, (x0, y0), (x3, y3), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x1, y1), (x3, y3), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x2, y2), (x3, y3), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x4, y4), (x5, y5), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x4, y4), (x0, y0), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x5, y5), (x1, y1), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x4, y4), (x6, y6), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x5, y5), (x7, y7), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x6, y6), (x8, y8), (255, 255, 255), 3)
+            cv2.line(manual_pose.image, (x7, y7), (x9, y9), (255, 255, 255), 3)
+            puntuacion = []
+            if y4 >= y6 - 30 and y4 <= y6 + 30 or y5 >= y7 - 30 and y5 <= y7 + 30:
                 cv2.line(
-                    image, (x11, y11), (x12, y12), (255, 255, 255), 3
+                    manual_pose.image, (x4, y4), (x6, y6), (0, 255, 255), 3
                 )  # unión de punto xy1 con xy2
-                cv2.line(image, (x11, y11), (x13, y13), (255, 255, 255), 3)
                 cv2.line(
-                    image, (x11, y11), (x23, y23), (255, 255, 255), 3
-                )  # unión de punto xy2 con xy3
-                cv2.line(image, (x13, y13), (x15, y15), (255, 255, 255), 3)
-                cv2.line(image, (x12, y12), (x14, y14), (255, 255, 255), 3)
-                cv2.line(image, (x14, y14), (x16, y16), (255, 255, 255), 3)
-                cv2.line(image, (x12, y12), (x24, y24), (255, 255, 255), 3)
-                cv2.line(image, (x24, y24), (x26, y26), (255, 255, 255), 3)
-                cv2.line(image, (x24, y24), (x23, y23), (255, 255, 255), 3)
-                cv2.line(image, (x26, y26), (x28, y28), (255, 255, 255), 3)
-                cv2.line(image, (x23, y23), (x25, y25), (255, 255, 255), 3)
-                cv2.line(image, (x25, y25), (x27, y27), (255, 255, 255), 3)
-
-                cv2.circle(image, (x11, y11), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x12, y12), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x13, y13), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x15, y15), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x14, y14), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x16, y16), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x24, y24), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x26, y26), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x28, y28), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(
-                    image, (x23, y23), 6, (43, 214, 38), -1
-                )  # color azul corrdenadas según indice del dibujo
-                cv2.circle(
-                    image, (x25, y25), 6, (43, 214, 38), -1
-                )  # color azul corrdenadas según indice del dibujo
-                cv2.circle(image, (x27, y27), 6, (43, 214, 38), -1)
-
-                if (
-                    y24 >= y26 - 30
-                    and y24 <= y26 + 30
-                    and y23 >= y25 - 30
-                    and y23 <= y25 + 30
-                ):
-                    cv2.line(
-                        image, (x24, y24), (x26, y26), (0, 255, 255), 3
-                    )  # unión de punto xy1 con xy2
-                    cv2.line(
-                        image, (x23, y23), (x25, y25), (0, 255, 255), 3
-                    )  # unión de punto xy1 con xy2
-
-                    puntos = 2
-                    puntuacion.append(puntos)
-                    print(f" puntuación: {sum(puntuacion)} ")
-
-                    if sum(puntuacion) >= 2:
-
-                        font = cv2.FONT_HERSHEY_SIMPLEX
-
-                        cv2.putText(
-                            img=image,
-                            text="GOOD JOB",
-                            org=(200, 200),
-                            fontFace=font,
-                            fontScale=2,
-                            color=(255, 255, 255),
-                            thickness=2,
-                            lineType=cv2.LINE_AA,
-                        )
-                image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                # Convert the BGR image to RGB and display it in Streamlit
-                # image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                st.image(image_rgb)
+                    manual_pose.image, (x5, y5), (x7, y7), (0, 255, 255), 3
+                )  # unión de punto xy1 con xy2
+                puntos = 2
+                puntuacion.append(puntos)
+            if sum(puntuacion) >= 2:
+                font = cv2.FONT_HERSHEY_SIMPLEX
+                cv2.putText(
+                    img=manual_pose.image,
+                    text="PARALLEL POSITION",
+                    org=(int(width * 0.68), 30),
+                    fontFace=font,
+                    fontScale=0.7,
+                    # text_color_bg=(127, 233, 100),
+                    color=(255, 255, 230),
+                    thickness=2,
+                    lineType=cv2.LINE_AA,
+                )
+            # image = cv2.resize(src = uu.image, dsize = (616,1096))
+            # image_rgb = cv2.cvtColor(manual_pose, cv2.COLOR_BGR2RGB)
+            # Convert the BGR image to RGB and display it in Streamlit
+            # image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            st.image(manual_pose.image)
     else:
         st.write("No image added. Please add an image to proceed.")
