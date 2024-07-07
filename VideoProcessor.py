@@ -1,6 +1,6 @@
 from FSM_squat import FSM_squat
 from thresholds import *
-from utils import draw_text
+from utils import draw_text, get_landmark_features, get_mediapipe_pose
 
 import cv2
 import av
@@ -33,9 +33,37 @@ class PhotoProcessor:
         self.mp_pose = mp.solutions.pose
         self.pose = self.mp_pose.Pose(static_image_mode=True)
 
+        # Dictionary to maintain the various landmark features.
+        self.dict_features = {}
+        self.left_features = {
+                                "shoulder": 11,
+                                "elbow": 13,
+                                "wrist": 15,
+                                "hip": 23,
+                                "knee": 25,
+                                "ankle": 27,
+                                "foot": 31,
+        }
+
+        self.right_features = {
+                                "shoulder": 12,
+                                "elbow": 14,
+                                "wrist": 16,
+                                "hip": 24,
+                                "knee": 26,
+                                "ankle": 28,
+                                "foot": 32,
+        }
+
+        self.dict_features["left"] = self.left_features
+        self.dict_features["right"] = self.right_features
+
     def process(self, np_image: np.ndarray):
         with self.pose as pose:
-            image = cv2.imdecode(np_image, cv2.IMREAD_COLOR)
+            try:
+                image = cv2.imdecode(np_image, cv2.IMREAD_COLOR)
+            except:
+                image = np_image
 
             height, width, _ = image.shape
             image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -44,107 +72,61 @@ class PhotoProcessor:
 
             if results.pose_landmarks is not None:
 
-                x11 = int(results.pose_landmarks.landmark[11].x * width)
-                y11 = int(results.pose_landmarks.landmark[11].y * height)
+                ps_lm = results.pose_landmarks
 
-                x12 = int(results.pose_landmarks.landmark[12].x * width)
-                y12 = int(results.pose_landmarks.landmark[12].y * height)
+                right_shoulder, right_elbow, right_wrist, right_hip, right_knee, right_ankle, right_foot = \
+                    get_landmark_features(ps_lm.landmark, self.dict_features, "right", width, height)
 
-                x13 = int(results.pose_landmarks.landmark[13].x * width)
-                y13 = int(results.pose_landmarks.landmark[13].y * height)
-
-                x14 = int(results.pose_landmarks.landmark[14].x * width)
-                y14 = int(results.pose_landmarks.landmark[14].y * height)
-
-                x15 = int(results.pose_landmarks.landmark[15].x * width)
-                y15 = int(results.pose_landmarks.landmark[15].y * height)
-
-                x16 = int(results.pose_landmarks.landmark[16].x * width)
-                y16 = int(results.pose_landmarks.landmark[16].y * height)
-
-                # x17= int(results.pose_landmarks.landmark[17].x * width)
-                # y17= int(results.pose_landmarks.landmark[17].y * height)
-
-                # x18= int(results.pose_landmarks.landmark[18].x * width)
-                # y18= int(results.pose_landmarks.landmark[18].y * height)
-
-                # x19= int(results.pose_landmarks.landmark[19].x * width)
-                # y19= int(results.pose_landmarks.landmark[19].y * height)
-
-                # x20= int(results.pose_landmarks.landmark[20].x * width)
-                # y20= int(results.pose_landmarks.landmark[20].y * height)
-
-                # x21= int(results.pose_landmarks.landmark[21].x * width)
-                # y21= int(results.pose_landmarks.landmark[21].y * height)
-
-                # x22= int(results.pose_landmarks.landmark[22].x * width)
-                # y22= int(results.pose_landmarks.landmark[22].y * height)
-
-                x23 = int(results.pose_landmarks.landmark[23].x * width)
-                y23 = int(results.pose_landmarks.landmark[23].y * height)
-
-                x24 = int(results.pose_landmarks.landmark[24].x * width)
-                y24 = int(results.pose_landmarks.landmark[24].y * height)
-
-                x25 = int(results.pose_landmarks.landmark[25].x * width)
-                y25 = int(results.pose_landmarks.landmark[25].y * height)
-
-                x26 = int(results.pose_landmarks.landmark[26].x * width)
-                y26 = int(results.pose_landmarks.landmark[26].y * height)
-
-                x27 = int(results.pose_landmarks.landmark[27].x * width)
-                y27 = int(results.pose_landmarks.landmark[27].y * height)
-
-                x28 = int(results.pose_landmarks.landmark[28].x * width)
-                y28 = int(results.pose_landmarks.landmark[28].y * height)
+                left_shoulder, left_elbow, left_wrist, left_hip, left_knee, left_ankle, left_foot = \
+                    get_landmark_features(ps_lm.landmark, self.dict_features, "left", width, height)
 
                 puntuacion = list()
 
                 cv2.line(
-                    image, (x11, y11), (x12, y12), (255, 255, 255), 3
+                    image, left_shoulder, right_shoulder, (255, 255, 255), 3
                 )  # unión de punto xy1 con xy2
-                cv2.line(image, (x11, y11), (x13, y13), (255, 255, 255), 3)
+                cv2.line(image, left_shoulder, left_elbow, (255, 255, 255), 3)
                 cv2.line(
-                    image, (x11, y11), (x23, y23), (255, 255, 255), 3
+                    image, left_shoulder, left_hip, (255, 255, 255), 3
                 )  # unión de punto xy2 con xy3
-                cv2.line(image, (x13, y13), (x15, y15), (255, 255, 255), 3)
-                cv2.line(image, (x12, y12), (x14, y14), (255, 255, 255), 3)
-                cv2.line(image, (x14, y14), (x16, y16), (255, 255, 255), 3)
-                cv2.line(image, (x12, y12), (x24, y24), (255, 255, 255), 3)
-                cv2.line(image, (x24, y24), (x26, y26), (255, 255, 255), 3)
-                cv2.line(image, (x24, y24), (x23, y23), (255, 255, 255), 3)
-                cv2.line(image, (x26, y26), (x28, y28), (255, 255, 255), 3)
-                cv2.line(image, (x23, y23), (x25, y25), (255, 255, 255), 3)
-                cv2.line(image, (x25, y25), (x27, y27), (255, 255, 255), 3)
+                cv2.line(image, left_elbow, left_wrist, (255, 255, 255), 3)
+                cv2.line(image, right_shoulder, right_elbow, (255, 255, 255), 3)
+                cv2.line(image, right_elbow, right_wrist, (255, 255, 255), 3)
+                cv2.line(image, right_shoulder, right_hip, (255, 255, 255), 3)
+                cv2.line(image, right_hip, right_knee, (255, 255, 255), 3)
+                cv2.line(image, right_hip, left_hip, (255, 255, 255), 3)
+                cv2.line(image, right_knee, right_ankle, (255, 255, 255), 3)
+                cv2.line(image, left_hip, left_knee, (255, 255, 255), 3)
+                cv2.line(image, left_knee, left_ankle, (255, 255, 255), 3)
 
-                cv2.circle(image, (x11, y11), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x12, y12), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x13, y13), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x15, y15), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x14, y14), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x16, y16), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x24, y24), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x26, y26), 6, (43, 214, 38), -1)  # color verde
-                cv2.circle(image, (x28, y28), 6, (43, 214, 38), -1)  # color verde
+                cv2.circle(image, left_shoulder, 6, (43, 214, 38), -1)  # color verde
+                cv2.circle(image, right_shoulder, 6, (43, 214, 38), -1)  # color verde
+                cv2.circle(image, left_elbow, 6, (43, 214, 38), -1)  # color verde
+                cv2.circle(image, left_wrist, 6, (43, 214, 38), -1)  # color verde
+                cv2.circle(image, right_elbow, 6, (43, 214, 38), -1)  # color verde
+                cv2.circle(image, right_wrist, 6, (43, 214, 38), -1)  # color verde
+                cv2.circle(image, right_hip, 6, (43, 214, 38), -1)  # color verde
+                cv2.circle(image, right_knee, 6, (43, 214, 38), -1)  # color verde
+                cv2.circle(image, right_ankle, 6, (43, 214, 38), -1)  # color verde
                 cv2.circle(
-                    image, (x23, y23), 6, (43, 214, 38), -1
+                    image, left_hip, 6, (43, 214, 38), -1
                 )  # color azul corrdenadas según indice del dibujo
                 cv2.circle(
-                    image, (x25, y25), 6, (43, 214, 38), -1
+                    image, left_knee, 6, (43, 214, 38), -1
                 )  # color azul corrdenadas según indice del dibujo
-                cv2.circle(image, (x27, y27), 6, (43, 214, 38), -1)
+                cv2.circle(image, left_ankle, 6, (43, 214, 38), -1)
 
                 if (
-                    (y24 >= y26 - 30
-                    and y24 <= y26 + 30)
-                    or (y23 >= y25 - 30
-                    and y23 <= y25 + 30)
+                    (right_hip[1] >= right_knee[1] - 30
+                    and right_hip[1] <= right_knee[1] + 30)
+                    or (left_hip[1] >= left_knee[1] - 30
+                    and left_hip[1] <= left_knee[1] + 30)
                 ):
                     cv2.line(
-                        image, (x24, y24), (x26, y26), (0, 255, 255), 3
+                        image, right_hip, right_knee, (0, 255, 255), 3
                     )  # unión de punto xy1 con xy2
                     cv2.line(
-                        image, (x23, y23), (x25, y25), (0, 255, 255), 3
+                        image, left_hip, left_knee, (0, 255, 255), 3
                     )  # unión de punto xy1 con xy2
 
                     puntos = 2
