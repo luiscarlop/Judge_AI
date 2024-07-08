@@ -418,6 +418,8 @@ class FSM_squat:
 
                 self.state_tracker['COUNT_FRAMES'][self.state_tracker['DISPLAY_TEXT']]+=1
 
+                # if self.state_tracker['SQUAT_COUNT'] > 0:
+                    
                 frame = self._show_feedback(frame, self.state_tracker['COUNT_FRAMES'], self.FEEDBACK_ID_MAP, self.state_tracker['VALID_SQUAT'])
 
 
