@@ -11,4 +11,4 @@ opencv-python
 opencv-python-headless
 moviepy
 streamlit-webrtc
-
+sci-kit-learn
