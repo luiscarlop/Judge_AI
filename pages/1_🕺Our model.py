@@ -1,3 +1,6 @@
+from utils import get_manual_landmark_features, draw_text
+from VideoProcessor import PhotoProcessorManual
+
 import streamlit as st
 import base64
 from PIL import Image
@@ -182,11 +185,11 @@ if option == "Live video":
     #             x4 = int(self.pose["x"][4])
     #             y4 = int(self.pose["y"][4])
     #             x5 = int(self.pose["x"][5])
-    #             y5 = int(self.pose["y"][5])
+    #             left_hip[1] = int(self.pose["y"][5])
     #             x6 = int(self.pose["x"][6])
     #             y6 = int(self.pose["y"][6])
     #             x7 = int(self.pose["x"][7])
-    #             y7 = int(self.pose["y"][7])
+    #             left_knee[1] = int(self.pose["y"][7])
     #             x8 = int(self.pose["x"][8])
     #             y8 = int(self.pose["y"][8])
     #             x9 = int(self.pose["x"][9])
@@ -194,17 +197,17 @@ if option == "Live video":
     #             cv2.line(frame, (x0, y0), (x3, y3), (255, 255, 255), 3)
     #             cv2.line(frame, (x1, y1), (x3, y3), (255, 255, 255), 3)
     #             cv2.line(frame, (x2, y2), (x3, y3), (255, 255, 255), 3)
-    #             cv2.line(frame, (x4, y4), (x5, y5), (255, 255, 255), 3)
-    #             cv2.line(frame, (x4, y4), (x0, y0), (255, 255, 255), 3)
-    #             cv2.line(frame, (x5, y5), (x1, y1), (255, 255, 255), 3)
-    #             cv2.line(frame, (x4, y4), (x6, y6), (255, 255, 255), 3)
-    #             cv2.line(frame, (x5, y5), (x7, y7), (255, 255, 255), 3)
-    #             cv2.line(frame, (x6, y6), (x8, y8), (255, 255, 255), 3)
-    #             cv2.line(frame, (x7, y7), (x9, y9), (255, 255, 255), 3)
+    #             cv2.line(frame, right_hip, left_hip, (255, 255, 255), 3)
+    #             cv2.line(frame, right_hip, (x0, y0), (255, 255, 255), 3)
+    #             cv2.line(frame, left_hip, (x1, y1), (255, 255, 255), 3)
+    #             cv2.line(frame, right_hip, right_knee, (255, 255, 255), 3)
+    #             cv2.line(frame, left_hip, left_knee, (255, 255, 255), 3)
+    #             cv2.line(frame, right_knee, right_ankle, (255, 255, 255), 3)
+    #             cv2.line(frame, left_knee, left_ankle, (255, 255, 255), 3)
     #             puntuacion = []
-    #             if y4 >= y6 - 30 and y4 <= y6 + 30 or y5 >= y7 - 30 and y5 <= y7 + 30:
-    #                 cv2.line(frame, (x4, y4), (x6, y6), (0, 255, 255), 3)
-    #                 cv2.line(frame, (x5, y5), (x7, y7), (0, 255, 255), 3)
+    #             if y4 >= y6 - 30 and y4 <= y6 + 30 or left_hip[1] >= left_knee[1] - 30 and left_hip[1] <= left_knee[1] + 30:
+    #                 cv2.line(frame, right_hip, right_knee, (0, 255, 255), 3)
+    #                 cv2.line(frame, left_hip, left_knee, (0, 255, 255), 3)
     #                 puntos = 2
     #                 puntuacion.append(puntos)
     #             if sum(puntuacion) >= 2:
@@ -244,75 +247,10 @@ if option == "Photo mode":
         "Even if this process isn’t in real-time, you’ll earn a point if your photo shows that you’ve gone bellow the parallel position in your squat."
     )
     img_file_buffer = st.camera_input("Take a picture!")
-    manual_pose = Manual_Pose_with_array()
+    # manual_pose = Manual_Pose_with_array()
     if img_file_buffer is not None:
-        # Convert the image to a numpy array
-        np_image = np.asarray(bytearray(img_file_buffer.read()), dtype=np.uint8)
-
-        image = cv2.imdecode(np_image, cv2.IMREAD_COLOR)
-        # image = cv2.resize(src=image, dsize=(642, 1141))
-        height, width, _ = image.shape
-        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        manual_pose.process(image_rgb)
-        if manual_pose.pose_landmarks is not None:
-            x0 = int(manual_pose.pose_landmarks["x"][0])
-            y0 = int(manual_pose.pose_landmarks["y"][0])
-            x1 = int(manual_pose.pose_landmarks["x"][1])
-            y1 = int(manual_pose.pose_landmarks["y"][1])
-            x2 = int(manual_pose.pose_landmarks["x"][2])
-            y2 = int(manual_pose.pose_landmarks["y"][2])
-            x3 = int(manual_pose.pose_landmarks["x"][3])
-            y3 = int(manual_pose.pose_landmarks["y"][3])
-            x4 = int(manual_pose.pose_landmarks["x"][4])
-            y4 = int(manual_pose.pose_landmarks["y"][4])
-            x5 = int(manual_pose.pose_landmarks["x"][5])
-            y5 = int(manual_pose.pose_landmarks["y"][5])
-            x6 = int(manual_pose.pose_landmarks["x"][6])
-            y6 = int(manual_pose.pose_landmarks["y"][6])
-            x7 = int(manual_pose.pose_landmarks["x"][7])
-            y7 = int(manual_pose.pose_landmarks["y"][7])
-            x8 = int(manual_pose.pose_landmarks["x"][8])
-            y8 = int(manual_pose.pose_landmarks["y"][8])
-            x9 = int(manual_pose.pose_landmarks["x"][9])
-            y9 = int(manual_pose.pose_landmarks["y"][9])
-            cv2.line(manual_pose.image, (x0, y0), (x3, y3), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x1, y1), (x3, y3), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x2, y2), (x3, y3), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x4, y4), (x5, y5), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x4, y4), (x0, y0), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x5, y5), (x1, y1), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x4, y4), (x6, y6), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x5, y5), (x7, y7), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x6, y6), (x8, y8), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x7, y7), (x9, y9), (255, 255, 255), 3)
-            puntuacion = []
-            if y4 >= y6 - 30 and y4 <= y6 + 30 or y5 >= y7 - 30 and y5 <= y7 + 30:
-                cv2.line(
-                    manual_pose.image, (x4, y4), (x6, y6), (0, 255, 255), 3
-                )  # unión de punto xy1 con xy2
-                cv2.line(
-                    manual_pose.image, (x5, y5), (x7, y7), (0, 255, 255), 3
-                )  # unión de punto xy1 con xy2
-                puntos = 2
-                puntuacion.append(puntos)
-            if sum(puntuacion) >= 2:
-                font = cv2.FONT_HERSHEY_SIMPLEX
-                cv2.putText(
-                    img=manual_pose.image,
-                    text="PARALLEL POSITION",
-                    org=(int(width * 0.68), 30),
-                    fontFace=font,
-                    fontScale=0.7,
-                    # text_color_bg=(127, 233, 100),
-                    color=(255, 255, 230),
-                    thickness=2,
-                    lineType=cv2.LINE_AA,
-                )
-            # image = cv2.resize(src = uu.image, dsize = (616,1096))
-            # image_rgb = cv2.cvtColor(manual_pose, cv2.COLOR_BGR2RGB)
-            # Convert the BGR image to RGB and display it in Streamlit
-            # image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            st.image(manual_pose.image)
+        
+        st.image(PhotoProcessorManual().process(img_file_buffer))
     else:
         st.write("No image captured. Please capture an image to proceed.")
 
@@ -327,74 +265,8 @@ if option == "Upload a photo":
         "Even if this process isn’t in real-time, you’ll earn a point if your photo shows that you’ve gone below the parallel position in your squat."
     )
     uploaded_file = st.file_uploader("Choose a photo", type=["jpg", "png"])
-    manual_pose = Manual_Pose_with_array()
+    
     if uploaded_file is not None:
-        # Convert the image to a numpy array
-        np_image = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
-
-        image = cv2.imdecode(np_image, cv2.IMREAD_COLOR)
-        # image = cv2.resize(src=image, dsize=(642, 1141))
-        height, width, _ = image.shape
-        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        manual_pose.process(image_rgb)
-        if manual_pose.pose_landmarks is not None:
-            x0 = int(manual_pose.pose_landmarks["x"][0])
-            y0 = int(manual_pose.pose_landmarks["y"][0])
-            x1 = int(manual_pose.pose_landmarks["x"][1])
-            y1 = int(manual_pose.pose_landmarks["y"][1])
-            x2 = int(manual_pose.pose_landmarks["x"][2])
-            y2 = int(manual_pose.pose_landmarks["y"][2])
-            x3 = int(manual_pose.pose_landmarks["x"][3])
-            y3 = int(manual_pose.pose_landmarks["y"][3])
-            x4 = int(manual_pose.pose_landmarks["x"][4])
-            y4 = int(manual_pose.pose_landmarks["y"][4])
-            x5 = int(manual_pose.pose_landmarks["x"][5])
-            y5 = int(manual_pose.pose_landmarks["y"][5])
-            x6 = int(manual_pose.pose_landmarks["x"][6])
-            y6 = int(manual_pose.pose_landmarks["y"][6])
-            x7 = int(manual_pose.pose_landmarks["x"][7])
-            y7 = int(manual_pose.pose_landmarks["y"][7])
-            x8 = int(manual_pose.pose_landmarks["x"][8])
-            y8 = int(manual_pose.pose_landmarks["y"][8])
-            x9 = int(manual_pose.pose_landmarks["x"][9])
-            y9 = int(manual_pose.pose_landmarks["y"][9])
-            cv2.line(manual_pose.image, (x0, y0), (x3, y3), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x1, y1), (x3, y3), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x2, y2), (x3, y3), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x4, y4), (x5, y5), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x4, y4), (x0, y0), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x5, y5), (x1, y1), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x4, y4), (x6, y6), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x5, y5), (x7, y7), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x6, y6), (x8, y8), (255, 255, 255), 3)
-            cv2.line(manual_pose.image, (x7, y7), (x9, y9), (255, 255, 255), 3)
-            puntuacion = []
-            if y4 >= y6 - 30 and y4 <= y6 + 30 or y5 >= y7 - 30 and y5 <= y7 + 30:
-                cv2.line(
-                    manual_pose.image, (x4, y4), (x6, y6), (0, 255, 255), 3
-                )  # unión de punto xy1 con xy2
-                cv2.line(
-                    manual_pose.image, (x5, y5), (x7, y7), (0, 255, 255), 3
-                )  # unión de punto xy1 con xy2
-                puntos = 2
-                puntuacion.append(puntos)
-            if sum(puntuacion) >= 2:
-                font = cv2.FONT_HERSHEY_SIMPLEX
-                cv2.putText(
-                    img=manual_pose.image,
-                    text="PARALLEL POSITION",
-                    org=(int(width * 0.68), 30),
-                    fontFace=font,
-                    fontScale=0.7,
-                    # text_color_bg=(127, 233, 100),
-                    color=(255, 255, 230),
-                    thickness=2,
-                    lineType=cv2.LINE_AA,
-                )
-            # image = cv2.resize(src = uu.image, dsize = (616,1096))
-            # image_rgb = cv2.cvtColor(manual_pose, cv2.COLOR_BGR2RGB)
-            # Convert the BGR image to RGB and display it in Streamlit
-            # image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            st.image(manual_pose.image)
+        st.image(PhotoProcessorManual().process(uploaded_file))
     else:
         st.write("No image added. Please add an image to proceed.")

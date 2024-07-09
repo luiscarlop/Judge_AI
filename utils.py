@@ -119,14 +119,32 @@ def find_angle(p1, p2, ref_pt = np.array([0,0])):
 
 
 
-def get_landmark_array(pose_landmark, key, frame_width, frame_height):
+def get_landmark_array(pose_landmark, key, frame_width, frame_height, manual: bool = False):
 
-    denorm_x = int(pose_landmark[key].x * frame_width)
-    denorm_y = int(pose_landmark[key].y * frame_height)
+    if not manual:
+        denorm_x = int(pose_landmark[key].x * frame_width)
+        denorm_y = int(pose_landmark[key].y * frame_height)
+    else:
+        denorm_x = int(pose_landmark["x"][key])
+        denorm_y = int(pose_landmark["y"][key])
 
     return np.array([denorm_x, denorm_y])
 
+def get_manual_landmark_features(pose_landmark, dict_features, frame_width, frame_height):
+    
+    right_shoulder  = get_landmark_array(pose_landmark, dict_features['right_shoulder'], frame_width, frame_height, manual=True)
+    left_shoulder   = get_landmark_array(pose_landmark, dict_features['left_shoulder'], frame_width, frame_height, manual=True)
+    head            = get_landmark_array(pose_landmark, dict_features['head'], frame_width, frame_height, manual=True)
+    collarbone      = get_landmark_array(pose_landmark, dict_features['collarbone'], frame_width, frame_height, manual=True)
+    right_hip       = get_landmark_array(pose_landmark, dict_features['right_hip'], frame_width, frame_height, manual=True)
+    left_hip        = get_landmark_array(pose_landmark, dict_features['left_hip'], frame_width, frame_height, manual=True)
+    right_knee      = get_landmark_array(pose_landmark, dict_features['right_knee'], frame_width, frame_height, manual=True)
+    left_knee       = get_landmark_array(pose_landmark, dict_features['left_knee'], frame_width, frame_height, manual=True)
+    right_ankle     = get_landmark_array(pose_landmark, dict_features['right_ankle'], frame_width, frame_height, manual=True)
+    left_ankle      = get_landmark_array(pose_landmark, dict_features['left_ankle'], frame_width, frame_height, manual=True)
 
+    return right_shoulder, left_shoulder, head, collarbone, right_hip, left_hip, right_knee, left_knee, right_ankle, left_ankle
+    
 
 
 def get_landmark_features(kp_results, dict_features, feature, frame_width, frame_height):

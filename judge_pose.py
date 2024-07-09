@@ -1,3 +1,5 @@
+from utils import get_manual_landmark_features
+
 from typing import Generator, Iterator, Tuple
 import numpy as np
 import pandas as pd
@@ -19,6 +21,19 @@ NUM_POINTS = 10
 
 
 class Manual_Pose_with_array:
+    def __init__(self):
+        self.dict_features = {
+            "right_shoulder": 0,
+            "left_shoulder": 1,
+            "head": 2,
+            "collarbone": 3,
+            "right_hip": 4,
+            "left_hip": 5,
+            "right_knee": 6,
+            "left_knee": 7,
+            "right_ankle": 8,
+            "left_ankle": 9,
+        }
 
     def process(self, array):
         IMG_SIZE = 224
