@@ -188,17 +188,21 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+IMG_WIDTH = 96
+IMG_HEIGHT = 128
+
 
 luis_path = "data/stored_pictures/IMG_4446.jpeg"
 luis_image = cv2.imread(luis_path)
 lu_rgb = cv2.cvtColor(luis_image, cv2.COLOR_BGR2RGB)
-new_width = 265
-new_height = 410
+new_width = IMG_WIDTH
+new_height = IMG_HEIGHT
 resized_image = cv2.resize(src=lu_rgb, dsize=(new_width, new_height))
 col5, col6, col7, col8 = st.columns([1.5, 10, 1, 1.5])
 with col5:
     st.image(
         resized_image,
+        use_column_width=False,
     )
 with col6:
     st.markdown(
@@ -236,13 +240,14 @@ st.markdown(
 claudio_path = "data/stored_pictures/photo.jpg"
 cl_image = cv2.imread(claudio_path)
 cl_rgb = cv2.cvtColor(cl_image, cv2.COLOR_BGR2RGB)
-new_width = 265
-new_height = 410
+new_width = IMG_WIDTH
+new_height = IMG_HEIGHT
 resized_image = cv2.resize(src=cl_rgb, dsize=(new_width, new_height))
 col5, col6, col7, col8 = st.columns([1.5, 10, 1, 1.5])
 with col5:
     st.image(
         resized_image,
+        use_column_width=False,
     )
 
 with col6:
@@ -286,13 +291,14 @@ st.markdown(
 noe_path = "data/stored_pictures/foto carnet noelia.jpg"
 noe_image = cv2.imread(noe_path)
 noe_rgb = cv2.cvtColor(noe_image, cv2.COLOR_BGR2RGB)
-new_width = 265
-new_height = 410
+new_width = IMG_WIDTH
+new_height = IMG_HEIGHT
 resized_image = cv2.resize(src=noe_rgb, dsize=(new_width, new_height))
 col5, col6, col7, col8 = st.columns([1.5, 10, 1, 1.5])
 with col5:
     st.image(
         resized_image,
+        use_column_width=False,
     )
 
 with col6:
