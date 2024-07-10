@@ -237,7 +237,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-claudio_path = "data/stored_pictures/photo.jpg"
+claudio_path = "data/stored_pictures/foto_claudio.jpeg"
 cl_image = cv2.imread(claudio_path)
 cl_rgb = cv2.cvtColor(cl_image, cv2.COLOR_BGR2RGB)
 new_width = IMG_WIDTH
