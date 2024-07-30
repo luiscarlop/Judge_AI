@@ -378,12 +378,14 @@ class FSM_squat:
                     # lift = self._check_movement()
 
                     if len(self.state_tracker['state_seq']) == 3 and not self.state_tracker['NO LIFT']:
-                        # if hip_vertical_angle < 10:
+                        # if hip_vertical_angle < 8:
                         self.state_tracker['SQUAT_COUNT']+=1
                         self.state_tracker['VALID_SQUAT'] = True
+                        self.state_tracker['NO LIFT'] = False
                         # else:
                         #     self.state_tracker['IMPROPER_SQUAT']+=1
                         #     self.state_tracker['VALID_SQUAT'] = False
+                        #     self.state_tracker['NO LIFT'] = True
 
                         
                     elif 's2' in self.state_tracker['state_seq'] and len(self.state_tracker['state_seq']) == 1:

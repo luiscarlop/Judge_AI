@@ -20,13 +20,18 @@ class VideoProcessor(VideoProcessorBase):
             self.mp_pose = mp.solutions.pose
             self.pose = self.mp_pose.Pose(static_image_mode=False)
 
-        def transform(self, frame):
-            frame = frame.to_ndarray(format="bgr24")
+        def transform(self, frame: av.VideoFormat) -> np.ndarray:
+            image = frame.to_ndarray(format="bgr24")
+
+            return image
+
+        def recv(self, frame):
+            new_frame = self.transform(frame)
 
             # Process the frame
-            FSM_squat.process(FSM, frame, self.pose)
+            FSM_squat.process(FSM, new_frame, self.pose)
 
-            return frame
+            return av.VideoFrame.from_ndarray(new_frame, format="bgr24")
         
 
 class PhotoProcessorManual:

@@ -1,7 +1,0 @@
-path: #path al dataset
-train: #path a la carpeta de train
-val: #path a la carpeta de validation
-
-#Clases
-Names:
-0: SKELETON TRACK

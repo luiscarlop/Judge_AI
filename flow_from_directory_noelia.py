@@ -1,44 +1,30 @@
 # INTRODUCIDAS POR NOELIA
-from typing import Generator, Iterator, Tuple
 import numpy as np
 import pandas as pd
 from PIL import Image
 from pathlib import Path
-import xml.etree.ElementTree as ET
+
 import cv2
-from sklearn.model_selection import train_test_split
-import os
-from tensorflow.keras.models import load_model
+
 import matplotlib.pyplot as plt
 import cv2
-import mediapipe as mp
-import sklearn
 
 DATA_DIR = Path("data")
 IMG_SIZE = 224
 NUM_POINTS = 10
 
 
-def restaurar_imagen(image: "array", iMGWI, IMGHI):
+def restaurar_imagen(image: np.ndarray, width, height):
 
     imagen_redimensionada = Image.fromarray(image)
-    imagen_redimensionada.save("imagen_redimensionada.jpg")
+    # imagen_redimensionada.save("imagen_redimensionada.jpg")
 
     # Devolver la imagen a su tamaño original
-    imagen_restaurada = imagen_redimensionada.resize((iMGWI, IMGHI))
-    # imagen_restaurada = cv2.cvtColor(imagen_restaurada, cv2.COLOR_BGR2RGB)
-    imagen_restaurada.save("imagen_restaurada.jpg")
-
-    plt.imshow(imagen_restaurada)
-
-    imagen_bgr = cv2.imread("imagen_restaurada.jpg")
+    imagen_restaurada = imagen_redimensionada.resize((width, height))
 
     # Convertir de BGR a RGB usando NumPy
-    imagen_rgb = cv2.cvtColor(imagen_bgr, cv2.COLOR_BGR2RGB)
-
-    # Guardar la imagen convertida a RGB
-    cv2.imwrite("imagen_restaurada.jpg", imagen_rgb)
-    plt.imshow(imagen_rgb)
+    imagen_rgb = cv2.cvtColor(imagen_restaurada, cv2.COLOR_BGR2RGB)
+    
     return imagen_rgb  # se queda guardada en rgb
 
 

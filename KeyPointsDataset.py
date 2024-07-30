@@ -13,10 +13,11 @@ import numpy as np
 import json
 import os
 
+
 BATCH_SIZE = 32
 IMG_SIZE = 224
 NUM_KEYPOINTS = 10 * 2
-json_data = json.load(open("annotations.json"))
+json_data = json.load(open("data/annotations/annotations.json"))
 
 def get_annotation(name: str):
     data = json_data[name]

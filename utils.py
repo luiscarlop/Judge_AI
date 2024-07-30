@@ -11,6 +11,8 @@ from PIL import Image
 from pathlib import Path
 from typing import Generator, Iterator, Tuple
 
+DATA_DIR = Path('data')
+
 
 def draw_rounded_rect(img, rect_start, rect_end, corner_width, box_color):
 
@@ -164,7 +166,7 @@ def get_landmark_features(kp_results, dict_features, feature, frame_width, frame
         return shldr_coord, elbow_coord, wrist_coord, hip_coord, knee_coord, ankle_coord, foot_coord
     
     else:
-       raise ValueError("feature needs to be either 'nose', 'left' or 'right")
+        raise ValueError("feature needs to be either 'nose', 'left' or 'right")
 
 
 def get_mediapipe_pose(
@@ -298,3 +300,59 @@ def read_json(json_path: str) -> dict:
         data = json.load(f)
 
     return data
+
+def restore_image(image: np.ndarray, width, height):
+
+    redim_img = Image.fromarray(image)
+    # imagen_redimensionada.save("imagen_redimensionada.jpg")
+
+    # Devolver la imagen a su tamaño original
+    restored_img = redim_img.resize((width, height))
+
+    # Convertir de BGR a RGB usando NumPy
+    img_rgb = cv2.cvtColor(restored_img, cv2.COLOR_BGR2RGB)
+    
+    return img_rgb  # se queda guardada en rgb
+
+def pair_coords(coord_list):
+    pares = []
+    for i in range(0, len(coord_list), 2):
+        if i + 1 < len(
+            coord_list
+        ):  # Asegurar que haya suficientes elementos para formar el par
+            par = (coord_list[i], coord_list[i + 1])
+            pares.append(par)
+
+    return pares
+
+def compare_keypoints(path, y, yhat):
+
+    imagen = cv2.imread(path)
+
+    pares_yhat = pair_coords(yhat)
+    pares_y = pair_coords(y)
+
+    for x, y in pares_yhat:
+
+        cv2.circle(
+            img=imagen,
+            center=(int(x), int(y)),
+            radius=13,
+            color=(0, 255, 0),
+            thickness=-1,
+        )
+
+    for x, y in pares_y:
+
+        cv2.circle(
+            img=imagen,
+            center=(int(x), int(y)),
+            radius=8,
+            color=(255, 50, 50),
+            thickness=-1,
+        )
+
+    plt.imshow(imagen)
+    plt.show()
+    return imagen
+
