@@ -94,7 +94,7 @@ def draw_text(
 
 
 
-def find_angle(p1, p2, ref_pt = np.array([0,0])):
+def find_angle_abs(p1, p2, ref_pt = np.array([0,0])):
     """Find the angle between two points. Formula: 
     cos(theta) = (p1_ref . p2_ref) / (||p1_ref|| * ||p2_ref||)
     theta = arccos(cos(theta)) --> angle in radians
@@ -118,6 +118,32 @@ def find_angle(p1, p2, ref_pt = np.array([0,0])):
     return int(degree)
 
 
+def find_angle(p1, p2, ref_pt=np.array([0, 0])):
+    """Find the angle between two points with respect to a vertical reference.
+    Args:
+        p1 (np.array): First point as an array [x, y].
+        p2 (np.array): Second point as an array [x, y].
+        ref_pt (np.array, optional): Reference point. Defaults to np.array([0,0]).
+    Returns:
+        float: Angle in degrees between -180 and 180.
+    """
+    p1_ref = p1 - ref_pt
+    p2_ref = p2 - ref_pt
+
+    # Calculate angle with respect to the vertical reference
+    angle_p1 = np.arctan2(p1_ref[1], p1_ref[0])
+    angle_p2 = np.arctan2(p2_ref[1], p2_ref[0])
+
+    # Calculate the difference between the two angles
+    theta = np.degrees(angle_p2 - angle_p1)
+
+    # Normalize the angle to the range -180 to 180
+    if theta > 180:
+        theta -= 360
+    elif theta < -180:
+        theta += 360
+
+    return int(theta)
 
 
 
